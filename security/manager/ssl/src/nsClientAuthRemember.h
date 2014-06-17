@@ -12,7 +12,7 @@
 #include "nsIObserver.h"
 #include "nsIX509Cert.h"
 #include "nsNSSCertificate.h"
-#include "nsString.h"
+#include "nsStringGlue.h"
 #include "nsWeakReference.h"
 #include "mozilla/Attributes.h"
 

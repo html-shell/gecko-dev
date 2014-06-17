@@ -6,6 +6,7 @@
 #ifndef _NS_NSSCERTIFICATE_H_
 #define _NS_NSSCERTIFICATE_H_
 
+#include "nsStringGlue.h"
 #include "nsIX509Cert.h"
 #include "nsIX509Cert2.h"
 #include "nsIX509Cert3.h"
@@ -22,7 +23,6 @@
 #include "pkix/pkixtypes.h"
 #include "certt.h"
 
-class nsAutoString;
 class nsINSSComponent;
 class nsIASN1Sequence;
 

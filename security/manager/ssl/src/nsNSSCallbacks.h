@@ -16,7 +16,7 @@
 #include "mozilla/CondVar.h"
 #include "mozilla/Mutex.h"
 #include "mozilla/Attributes.h"
-#include "nsString.h"
+#include "nsStringGlue.h"
 
 class nsILoadGroup;
 
