@@ -611,13 +611,13 @@ RegisterStaticAtoms(const nsStaticAtom* aAtoms, uint32_t aAtomCount)
   return NS_OK;
 }
 
-already_AddRefed<nsIAtom>
+NS_EXPORT_(already_AddRefed<nsIAtom>)
 NS_NewAtom(const char* aUTF8String)
 {
   return NS_NewAtom(nsDependentCString(aUTF8String));
 }
 
-already_AddRefed<nsIAtom>
+NS_EXPORT_(already_AddRefed<nsIAtom>)
 NS_NewAtom(const nsACString& aUTF8String)
 {
   uint32_t hash = 0;
@@ -643,13 +643,13 @@ NS_NewAtom(const nsACString& aUTF8String)
   return atom.forget();
 }
 
-already_AddRefed<nsIAtom>
+NS_EXPORT_(already_AddRefed<nsIAtom>)
 NS_NewAtom(const char16_t* aUTF16String)
 {
   return NS_NewAtom(nsDependentString(aUTF16String));
 }
 
-already_AddRefed<nsIAtom>
+NS_EXPORT_(already_AddRefed<nsIAtom>)
 NS_NewAtom(const nsAString& aUTF16String)
 {
   uint32_t hash = 0;
@@ -669,7 +669,7 @@ NS_NewAtom(const nsAString& aUTF16String)
   return atom.forget();
 }
 
-nsIAtom*
+NS_EXPORT_(nsIAtom*)
 NS_NewPermanentAtom(const nsAString& aUTF16String)
 {
   uint32_t hash = 0;
@@ -692,13 +692,13 @@ NS_NewPermanentAtom(const nsAString& aUTF16String)
   return atom;
 }
 
-nsrefcnt
+NS_EXPORT_(nsrefcnt)
 NS_GetNumberOfAtoms(void)
 {
   return gAtomTable.entryCount;
 }
 
-nsIAtom*
+NS_EXPORT_(nsIAtom*)
 NS_GetStaticAtom(const nsAString& aUTF16String)
 {
   NS_PRECONDITION(gStaticAtomTable, "Static atom table not created yet.");
@@ -710,7 +710,7 @@ NS_GetStaticAtom(const nsAString& aUTF16String)
   return atom;
 }
 
-void
+NS_EXPORT_(void)
 NS_SealStaticAtomTable()
 {
   gStaticAtomTableSealed = true;
