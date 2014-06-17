@@ -32,6 +32,7 @@ class SmartCardThreadList;
 namespace mozilla { namespace psm {
 
 MOZ_WARN_UNUSED_RESULT
+  NS_EXPORT
   ::mozilla::TemporaryRef<mozilla::psm::SharedCertVerifier>
   GetDefaultCertVerifier();
 

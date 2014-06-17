@@ -30,7 +30,7 @@ namespace mozilla {
  * be called; in that case ReleaseNSSResources will be called and then
  * CallCallback will be called with an error code.
  */
-class CryptoTask : public nsRunnable,
+class NS_EXPORT CryptoTask : public nsRunnable,
                    public nsNSSShutDownObject
 {
 public:

@@ -11,7 +11,7 @@
 
 namespace mozilla { namespace psm {
 
-class SharedCertVerifier : public mozilla::psm::CertVerifier
+class NS_EXPORT SharedCertVerifier : public mozilla::psm::CertVerifier
 {
 protected:
   ~SharedCertVerifier();

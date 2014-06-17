@@ -157,7 +157,7 @@ StringEnumeratorTail(T** aResult)
 // constructors
 //
 
-nsresult
+NS_EXPORT_(nsresult)
 NS_NewStringEnumerator(nsIStringEnumerator** aResult,
                        const nsTArray<nsString>* aArray, nsISupports* aOwner)
 {
@@ -169,7 +169,7 @@ NS_NewStringEnumerator(nsIStringEnumerator** aResult,
 }
 
 
-nsresult
+NS_EXPORT_(nsresult)
 NS_NewUTF8StringEnumerator(nsIUTF8StringEnumerator** aResult,
                            const nsTArray<nsCString>* aArray, nsISupports* aOwner)
 {
@@ -180,7 +180,7 @@ NS_NewUTF8StringEnumerator(nsIUTF8StringEnumerator** aResult,
     return StringEnumeratorTail(aResult);
 }
 
-nsresult
+NS_EXPORT_(nsresult)
 NS_NewAdoptingStringEnumerator(nsIStringEnumerator** aResult,
                                nsTArray<nsString>* aArray)
 {
@@ -191,7 +191,7 @@ NS_NewAdoptingStringEnumerator(nsIStringEnumerator** aResult,
     return StringEnumeratorTail(aResult);
 }
 
-nsresult
+NS_EXPORT_(nsresult)
 NS_NewAdoptingUTF8StringEnumerator(nsIUTF8StringEnumerator** aResult,
                                    nsTArray<nsCString>* aArray)
 {
@@ -203,7 +203,7 @@ NS_NewAdoptingUTF8StringEnumerator(nsIUTF8StringEnumerator** aResult,
 }
 
 // const ones internally just forward to the non-const equivalents
-nsresult
+NS_EXPORT_(nsresult)
 NS_NewStringEnumerator(nsIStringEnumerator** aResult,
                        const nsTArray<nsString>* aArray)
 {
@@ -214,7 +214,7 @@ NS_NewStringEnumerator(nsIStringEnumerator** aResult,
     return StringEnumeratorTail(aResult);
 }
 
-nsresult
+NS_EXPORT_(nsresult)
 NS_NewUTF8StringEnumerator(nsIUTF8StringEnumerator** aResult,
                            const nsTArray<nsCString>* aArray)
 {

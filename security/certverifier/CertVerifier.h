@@ -12,7 +12,7 @@
 
 namespace mozilla { namespace psm {
 
-class CertVerifier
+class NS_EXPORT CertVerifier
 {
 public:
   typedef unsigned int Flags;
