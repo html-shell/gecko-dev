@@ -30,14 +30,14 @@ inline bool WillOverrun(char16_t* aDest, char16_t* aDestEnd, uint32_t aLength)
 #define NS_IBASICENCODER_IID \
 { 0x65968a7b, 0x6467, 0x4c4a, { 0xb5, 0xa, 0x3e, 0xc, 0x97, 0xa3, 0x2f, 0x7 } }
 
-class nsIBasicDecoder : public nsISupports {
+class NS_EXPORT nsIBasicDecoder : public nsISupports {
 public:
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_IBASICDECODER_IID)
 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(nsIBasicDecoder, NS_IBASICDECODER_IID)
 
-class nsIBasicEncoder : public nsISupports {
+class NS_EXPORT nsIBasicEncoder : public nsISupports {
 public:
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_IBASICENCODER_IID)
 };
@@ -64,7 +64,7 @@ NS_DEFINE_STATIC_IID_ACCESSOR(nsIBasicEncoder, NS_IBASICENCODER_IID)
  * @created         19/Apr/1999
  * @author  Catalin Rotaru [CATA]
  */
-class nsBasicDecoderSupport : public nsIUnicodeDecoder
+class NS_EXPORT nsBasicDecoderSupport : public nsIUnicodeDecoder
 #ifdef DEBUG
                               ,public nsIBasicDecoder
 #endif
@@ -105,7 +105,7 @@ protected:
  * @created         15/Mar/1999
  * @author  Catalin Rotaru [CATA]
  */
-class nsBufferDecoderSupport : public nsBasicDecoderSupport
+class NS_EXPORT nsBufferDecoderSupport : public nsBasicDecoderSupport
 {
 protected:
 
@@ -158,7 +158,7 @@ public:
  * @created         15/Mar/1999
  * @author  Catalin Rotaru [CATA]
  */
-class nsTableDecoderSupport : public nsBufferDecoderSupport
+class NS_EXPORT nsTableDecoderSupport : public nsBufferDecoderSupport
 {
 public:
 
@@ -195,7 +195,7 @@ protected:
  * @created         24/Mar/1999
  * @author  Catalin Rotaru [CATA]
  */
-class nsMultiTableDecoderSupport : public nsBufferDecoderSupport
+class NS_EXPORT nsMultiTableDecoderSupport : public nsBufferDecoderSupport
 {
 public:
 
@@ -235,7 +235,7 @@ protected:
  * @created         19/Apr/1999
  * @author  Catalin Rotaru [CATA]
  */
-class nsOneByteDecoderSupport : public nsBasicDecoderSupport
+class NS_EXPORT nsOneByteDecoderSupport : public nsBasicDecoderSupport
 {
 public:
 
@@ -269,7 +269,7 @@ protected:
 //----------------------------------------------------------------------
 // Class nsBasicEncoder [declaration]
 
-class nsBasicEncoder : public nsIUnicodeEncoder
+class NS_EXPORT nsBasicEncoder : public nsIUnicodeEncoder
 #ifdef DEBUG
                        ,public nsIBasicEncoder
 #endif
@@ -303,7 +303,7 @@ protected:
  * @created         17/Feb/1999
  * @author  Catalin Rotaru [CATA]
  */
-class nsEncoderSupport :  public nsBasicEncoder
+class NS_EXPORT nsEncoderSupport :  public nsBasicEncoder
 {
 
 protected:
@@ -383,7 +383,7 @@ public:
  * @created         17/Feb/1999
  * @author  Catalin Rotaru [CATA]
  */
-class nsTableEncoderSupport : public nsEncoderSupport
+class NS_EXPORT nsTableEncoderSupport : public nsEncoderSupport
 {
 public:
 
@@ -426,7 +426,7 @@ protected:
  * @created         11/Mar/1999
  * @author  Catalin Rotaru [CATA]
  */
-class nsMultiTableEncoderSupport : public nsEncoderSupport
+class NS_EXPORT nsMultiTableEncoderSupport : public nsEncoderSupport
 {
 public:
 
