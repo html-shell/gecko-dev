@@ -15,7 +15,7 @@ namespace mozilla { namespace psm {
 
 struct ChainValidationCallbackState;
 
-class CertVerifier
+class NS_EXPORT CertVerifier
 {
 public:
   typedef unsigned int Flags;

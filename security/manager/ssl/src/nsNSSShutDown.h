@@ -81,7 +81,7 @@ private:
 };
 
 // Helper class that automatically enters/leaves the global activity state
-class nsNSSShutDownPreventionLock
+class NS_EXPORT nsNSSShutDownPreventionLock
 {
 public:
   nsNSSShutDownPreventionLock();
@@ -100,7 +100,7 @@ public:
 
 // Singleton, used by nsNSSComponent to track the list of PSM objects,
 // which hold NSS resources and support the "early cleanup mechanism".
-class nsNSSShutDownList
+class NS_EXPORT nsNSSShutDownList
 {
 public:
   ~nsNSSShutDownList();
@@ -140,10 +140,7 @@ public:
   // Notify all registered instances that want to react to that event.
   nsresult doPK11Logout();
   
-  static nsNSSActivityState *getActivityState()
-  {
-    return singleton ? &singleton->mActivityState : nullptr;
-  }
+  static nsNSSActivityState *getActivityState();
   
 private:
   nsNSSShutDownList();
@@ -156,7 +153,6 @@ private:
                                                     uint32_t number, void *arg);
 protected:
   mozilla::Mutex mListLock;
-  static nsNSSShutDownList *singleton;
   PLDHashTable mObjects;
   uint32_t mActiveSSLSockets;
   PLDHashTable mPK11LogoutCancelObjects;
@@ -239,7 +235,7 @@ protected:
   };
 */
 
-class nsNSSShutDownObject
+class NS_EXPORT nsNSSShutDownObject
 {
 public:
 

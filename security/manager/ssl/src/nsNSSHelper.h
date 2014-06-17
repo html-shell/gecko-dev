@@ -15,7 +15,7 @@
 // Implementation of an nsIInterfaceRequestor for use
 // as context for NSS calls
 //
-class PipUIContext : public nsIInterfaceRequestor
+class NS_EXPORT PipUIContext : public nsIInterfaceRequestor
 {
 public:
   NS_DECL_THREADSAFE_ISUPPORTS

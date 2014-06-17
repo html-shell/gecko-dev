@@ -9,7 +9,7 @@
 #include "nsStringGlue.h"
 using std::string;
 
-class nsUConvPropertySearch
+class NS_EXPORT nsUConvPropertySearch
 {
   public:
     /**
