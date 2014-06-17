@@ -48,7 +48,7 @@ typedef uint8_t SHA384Buffer[SHA384_LENGTH];
 // issuer public key, much like in an encoded OCSP response itself). A maximum
 // of 1024 distinct entries can be stored.
 // OCSPCache is thread-safe.
-class OCSPCache
+class NS_EXPORT OCSPCache
 {
 public:
   OCSPCache();

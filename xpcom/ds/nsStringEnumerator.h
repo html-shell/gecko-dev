@@ -42,15 +42,15 @@
 // InternalMethod(enumerator);
 // NS_RELEASE(enumerator);
 //
-nsresult
+NS_EXPORT nsresult
 NS_NewStringEnumerator(nsIStringEnumerator** aResult,
                        const nsTArray<nsString>* aArray,
                        nsISupports* aOwner);
-nsresult
+NS_EXPORT nsresult
 NS_NewUTF8StringEnumerator(nsIUTF8StringEnumerator** aResult,
                            const nsTArray<nsCString>* aArray);
 
-nsresult
+NS_EXPORT nsresult
 NS_NewStringEnumerator(nsIStringEnumerator** aResult,
                        const nsTArray<nsString>* aArray);
 
@@ -63,11 +63,11 @@ NS_NewStringEnumerator(nsIStringEnumerator** aResult,
 // nsTArray<nsCString>* array = new nsTArray<nsCString>;
 // array->AppendString("abcd");
 // NS_NewAdoptingStringEnumerator(&result, array);
-nsresult
+NS_EXPORT nsresult
 NS_NewAdoptingStringEnumerator(nsIStringEnumerator** aResult,
                                nsTArray<nsString>* aArray);
 
-nsresult
+NS_EXPORT nsresult
 NS_NewAdoptingUTF8StringEnumerator(nsIUTF8StringEnumerator** aResult,
                                    nsTArray<nsCString>* aArray);
 
@@ -84,7 +84,7 @@ NS_NewAdoptingUTF8StringEnumerator(nsIUTF8StringEnumerator** aResult,
 //     return NS_NewStringEnumerator(aResult, mCategoryList, this);
 // }
 //
-nsresult
+NS_EXPORT nsresult
 NS_NewUTF8StringEnumerator(nsIUTF8StringEnumerator** aResult,
                            const nsTArray<nsCString>* aArray,
                            nsISupports* aOwner);

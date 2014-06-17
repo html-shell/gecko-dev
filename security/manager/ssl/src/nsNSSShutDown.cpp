@@ -38,7 +38,8 @@ static const PLDHashTableOps gSetOps = {
   ObjectSetInitEntry
 };
 
-nsNSSShutDownList *nsNSSShutDownList::singleton = nullptr;
+static nsNSSShutDownList * singleton = nullptr;
+
 
 nsNSSShutDownList::nsNSSShutDownList()
 :mListLock("nsNSSShutDownList.mListLock")
@@ -161,6 +162,11 @@ nsNSSShutDownList::doPK11LogoutHelper(PLDHashTable *table,
   }
 
   return PL_DHASH_NEXT;
+}
+
+nsNSSActivityState * nsNSSShutDownList::getActivityState()
+{
+  return singleton ? &singleton->mActivityState : nullptr;
 }
 
 bool nsNSSShutDownList::isUIActive()

@@ -29,6 +29,7 @@
 #include <limits>
 #include <stdint.h>
 
+#include "nscore.h"
 #include "pkix/Result.h"
 
 namespace mozilla { namespace pkix {
@@ -38,7 +39,7 @@ namespace mozilla { namespace pkix {
 // OCSP. This type has second-level precision. The time zone is always UTC.
 //
 // Pass by value, not by reference.
-class Time final
+class NS_EXPORT Time final
 {
 public:
   // Construct an uninitilized instance.
@@ -116,7 +117,7 @@ inline Time TimeFromElapsedSecondsAD(uint64_t elapsedSecondsAD)
   return Time(elapsedSecondsAD);
 }
 
-Time Now();
+NS_EXPORT Time Now();
 
 // Note the epoch is the unix epoch (ie 00:00:00 UTC, 1 January 1970)
 Time TimeFromEpochInSeconds(uint64_t secondsSinceEpoch);
