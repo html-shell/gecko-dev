@@ -23,7 +23,7 @@ enum class KeySizeStatus {
   AlreadyBad = 3,
 };
 
-class CertVerifier
+class NS_EXPORT CertVerifier
 {
 public:
   typedef unsigned int Flags;

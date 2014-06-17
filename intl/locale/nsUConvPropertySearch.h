@@ -7,7 +7,7 @@
 
 #include "nsStringGlue.h"
 
-class nsUConvPropertySearch
+class NS_EXPORT nsUConvPropertySearch
 {
   public:
     /**
