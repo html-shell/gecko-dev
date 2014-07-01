@@ -279,6 +279,21 @@ VARIABLES = {
         Makefile.in.
         """, 'export'),
 
+    'EXPAND_PATHS': (OrderedDict, dict,
+        """Path for install""", None),
+
+    'MAP': (OrderedDict, dict,
+        """MAP for install""", None),
+
+    'PREF_JS_EXPORTS': (StrictOrderingOnAppendList, list,
+        """PREF_JS_EXPORTS for install""", None),
+
+    'DIST_CHROME_FILES': (StrictOrderingOnAppendList, list,
+        """DIST_CHROME_FILES for install""", None),
+
+    'FILES': (StrictOrderingOnAppendList, list,
+        """FILES for install""", None),
+
     'DEFINES': (OrderedDict, dict,
         """Dictionary of compiler defines to declare.
 
@@ -491,6 +506,10 @@ VARIABLES = {
 
     'LOCAL_INCLUDES': (StrictOrderingOnAppendList, list,
         """Additional directories to be searched for include files by the compiler.
+        """, None),
+
+    'LOCALE_SRCDIR': (unicode, unicode,
+        """The srcdir for locales.
         """, None),
 
     'MSVC_ENABLE_PGO': (bool, bool,
@@ -812,6 +831,11 @@ VARIABLES = {
         being packaged into an extension instead of the main dist/bin results.
         """, 'libs'),
 
+    'RELATIVE_SRC_DIR': (unicode, unicode,
+        """The RELATIVE_SRC_DIR is used for jar.mn file process, it's for the 
+        command line option `--relativesrcdir=`
+        """, 'libs'),
+
     'DIST_SUBDIR': (unicode, unicode,
         """The name of an alternate directory to install files to.
 
@@ -819,7 +843,13 @@ VARIABLES = {
         being placed in the $(DIST_SUBDIR) subdirectory of where it would
         otherwise be placed.
         """, 'libs'),
-
+    'FILES_PATH': (unicode, unicode,
+        """
+        FILES_PATH
+        """, None),
+    'DIST_FILES': (StrictOrderingOnAppendList, list,
+        """List of files that going to be dist.
+        """, None),
     'FINAL_TARGET': (FinalTargetValue, unicode,
         """The name of the directory to install targets to.
 
