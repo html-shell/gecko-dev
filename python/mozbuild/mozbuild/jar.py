@@ -28,7 +28,7 @@ if sys.platform == 'win32':
     from ctypes import windll, WinError
     CreateHardLink = windll.kernel32.CreateHardLinkA
 
-__all__ = ['JarMaker']
+__all__ = ['JarMaker', 'jm']
 
 
 class ZipEntry(object):
@@ -91,6 +91,8 @@ class JarMaker(object):
         self.l10nmerge = None
         self.relativesrcdir = None
         self.rootManifestAppId = None
+        self.processList = []
+        self.installList = []
 
     def getCommandLineParser(self):
         '''Get a optparse.OptionParser for jarmaker.
@@ -133,6 +135,8 @@ class JarMaker(object):
         p.add_option('--root-manifest-entry-appid', type='string',
                      help='add an app id specific root chrome manifest entry.'
                      )
+        p.add_option('--output-list', action='store_true', dest="outputList", default=False,
+                     help='Check if output the files list need to be processed and copied')
         return p
 
     def processIncludes(self, includes):
@@ -384,6 +388,13 @@ class JarMaker(object):
                 jf.close()
             raise RuntimeError('File "{0}" not found in {1}'.format(src,
                                ', '.join(src_base)))
+        if self.options.outputList:
+            realout = outHelper.ensureDirFor(out)
+            if m.group('optPreprocess'):
+                self.processList.append((realsrc, realout))
+            else:
+                self.installList.append((realsrc, realout))
+            return
         if m.group('optPreprocess'):
             outf = outHelper.getOutput(out)
             inf = open(realsrc)
@@ -485,12 +496,15 @@ class JarMaker(object):
                 if rv == 0:
                     raise WinError()
 
+jm = None
 
 def main(args=None):
+    global jm
     args = args or sys.argv
     jm = JarMaker()
     p = jm.getCommandLineParser()
     (options, args) = p.parse_args(args)
+    jm.options = options
     jm.processIncludes(options.I)
     jm.outputFormat = options.f
     jm.sourcedirs = options.s
