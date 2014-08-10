@@ -400,7 +400,7 @@ class JarMaker(object):
         # copy or symlink if newer or overwrite
 
         if m.group('optOverwrite') or getModTime(realsrc) \
-            > outHelper.getDestModTime(m.group('output')):
+            > outHelper.getDestModTime(out):
             if self.outputFormat == 'symlink':
                 outHelper.symlink(realsrc, out)
                 return
