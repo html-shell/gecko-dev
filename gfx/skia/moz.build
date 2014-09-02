@@ -925,6 +925,8 @@ if (CONFIG['MOZ_WIDGET_TOOLKIT'] == 'android') or    (CONFIG['MOZ_WIDGET_TOOLKIT
 if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'windows':
     DEFINES['SKIA_DLL'] = 1
     DEFINES['GR_DLL'] = 1
+    if CONFIG['MOZ_ENABLE_DIRECT2D1_1']:
+        DEFINES['USE_DWRITE_1'] = 1
 
     # MSVC doesn't need special compiler flags, but Skia needs to be told that these files should
     # be built with the required SSE level or it will simply compile in stubs and cause runtime crashes

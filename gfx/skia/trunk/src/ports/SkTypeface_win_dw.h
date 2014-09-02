@@ -17,7 +17,9 @@
 #include "SkTypes.h"
 
 #include <dwrite.h>
+#ifdef USE_DWRITE_1
 #include <dwrite_1.h>
+#endif
 
 class SkFontDescriptor;
 struct SkScalerContextRec;
@@ -52,11 +54,13 @@ private:
         , fDWriteFont(SkRefComPtr(font))
         , fDWriteFontFace(SkRefComPtr(fontFace))
     {
+#ifdef USE_DWRITE_1
         if (!SUCCEEDED(fDWriteFontFace->QueryInterface(&fDWriteFontFace1))) {
             // IUnknown::QueryInterface states that if it fails, punk will be set to NULL.
             // http://blogs.msdn.com/b/oldnewthing/archive/2004/03/26/96777.aspx
             SK_ALWAYSBREAK(NULL == fDWriteFontFace1.get());
         }
+#endif
     }
 
 public:
@@ -66,7 +70,9 @@ public:
     SkTScopedComPtr<IDWriteFontFamily> fDWriteFontFamily;
     SkTScopedComPtr<IDWriteFont> fDWriteFont;
     SkTScopedComPtr<IDWriteFontFace> fDWriteFontFace;
+#ifdef USE_DWRITE_1
     SkTScopedComPtr<IDWriteFontFace1> fDWriteFontFace1;
+#endif
 
     static DWriteFontTypeface* Create(IDWriteFactory* factory,
                                       IDWriteFontFace* fontFace,

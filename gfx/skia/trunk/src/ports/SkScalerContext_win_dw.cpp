@@ -26,7 +26,9 @@
 #include "SkTypeface_win_dw.h"
 
 #include <dwrite.h>
+#ifdef USE_DWRITE_1
 #include <dwrite_1.h>
+#endif
 
 static bool isLCD(const SkScalerContext::Rec& rec) {
     return SkMask::kLCD16_Format == rec.fMaskFormat ||
@@ -479,6 +481,7 @@ void SkScalerContext_DW::generateFontMetrics(SkPaint::FontMetrics* metrics) {
     metrics->fFlags |= SkPaint::FontMetrics::kUnderlineThinknessIsValid_Flag;
     metrics->fFlags |= SkPaint::FontMetrics::kUnderlinePositionIsValid_Flag;
 
+#ifdef USE_DWRITE_1
     if (NULL != fTypeface->fDWriteFontFace1.get()) {
         DWRITE_FONT_METRICS1 dwfm1;
         fTypeface->fDWriteFontFace1->GetMetrics(&dwfm1);
@@ -488,7 +491,9 @@ void SkScalerContext_DW::generateFontMetrics(SkPaint::FontMetrics* metrics) {
         metrics->fXMax = fTextSizeRender * SkIntToScalar(dwfm1.glyphBoxRight) / upem;
 
         metrics->fMaxCharWidth = metrics->fXMax - metrics->fXMin;
-    } else {
+    } else
+#endif
+    {
         AutoTDWriteTable<SkOTTableHead> head(fTypeface->fDWriteFontFace.get());
         if (head.fExists &&
             head.fSize >= sizeof(SkOTTableHead) &&
