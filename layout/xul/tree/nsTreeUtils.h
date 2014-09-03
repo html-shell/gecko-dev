@@ -23,6 +23,9 @@ class nsTreeUtils
     static nsresult
     TokenizeProperties(const nsAString& aProperties, AtomArray & aPropertiesArray);
 
+    static nsAutoString
+    StringizeProperties(const AtomArray& aPropertiesArray);
+
     static nsIContent*
     GetImmediateChild(nsIContent* aContainer, nsIAtom* aTag);
 

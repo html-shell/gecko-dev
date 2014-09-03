@@ -12,6 +12,8 @@
 #include "nsGkAtoms.h"
 #include "nsIContent.h"
 
+#include "mozilla/Move.h"
+
 using namespace mozilla;
 
 nsresult
@@ -49,6 +51,19 @@ nsTreeUtils::TokenizeProperties(const nsAString& aProperties, AtomArray & aPrope
   } while (iter != end);
 
   return NS_OK;
+}
+
+nsAutoString
+nsTreeUtils::StringizeProperties(const AtomArray& aPropertiesArray)
+{
+  nsAutoString properties;
+  for (uint32_t i = 0; i < aPropertiesArray.Length(); ++i) {
+    if (i > 0) {
+      properties.Append(' ');
+    }
+    properties += aPropertiesArray[i]->GetUTF16String();
+  }
+  return Move(properties);
 }
 
 nsIContent*
