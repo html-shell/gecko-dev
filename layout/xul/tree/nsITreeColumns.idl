@@ -8,7 +8,7 @@ interface nsITreeColumns;
 interface nsIDOMElement;
 interface nsIAtom;
 
-[scriptable, uuid(ae835ecf-6b32-4660-9b43-8a270df56e02)]
+[scriptable, uuid(38822525-5041-4b8f-be5a-82f548f1667d)]
 interface nsITreeColumn : nsISupports
 {
   readonly attribute nsIDOMElement element;
@@ -32,6 +32,8 @@ interface nsITreeColumn : nsISupports
   const short TYPE_TEXT                = 1;
   const short TYPE_CHECKBOX            = 2;
   const short TYPE_PROGRESSMETER       = 3;
+  const short TYPE_RENDERER            = 4;
+
   readonly attribute short type;
 
   nsITreeColumn getNext();
