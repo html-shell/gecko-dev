@@ -14,7 +14,7 @@ interface nsIDOMDocument;
 interface imgIScriptedNotificationObserver;
 interface imgINotificationObserver;
 
-[scriptable, builtinclass, uuid(4c2383a4-931c-484d-8c4a-973590f66e3f)]
+[scriptable, builtinclass, uuid(d003366b-733e-4f91-b6f4-c0cf3f5b273e)]
 interface imgITools : nsISupports
 {
     /**
@@ -90,6 +90,8 @@ interface imgITools : nsISupports
                                      in long aWidth,
                                      in long aHeight,
                                      [optional] in AString outputOptions);
+
+    imgIContainer createImageFromCanvasContext(in nsISupports canvasContext);
 
     /**
      * getImgLoaderForDocument

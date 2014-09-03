@@ -19,10 +19,14 @@
 #include "imgIEncoder.h"
 #include "nsStreamUtils.h"
 #include "nsContentUtils.h"
+#include "nsICanvasRenderingContextInternal.h"
 #include "ImageFactory.h"
+#include "ImageOps.h"
 #include "Image.h"
 #include "ScriptedNotificationObserver.h"
 #include "imgIScriptedNotificationObserver.h"
+#include "gfx2DGlue.h"
+#include "gfxDrawable.h"
 #include "gfxPlatform.h"
 
 using namespace mozilla;
@@ -306,6 +310,27 @@ NS_IMETHODIMP imgTools::CreateScriptedObserver(imgIScriptedNotificationObserver*
                                                imgINotificationObserver** aObserver)
 {
   NS_ADDREF(*aObserver = new ScriptedNotificationObserver(aInner));
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+imgTools::CreateImageFromCanvasContext(nsISupports        *aCanvasContext,
+                                       imgIContainer      **aContainer)
+{
+  nsCOMPtr<nsICanvasRenderingContextInternal> contextInternal =
+      do_QueryInterface(aCanvasContext);
+  if (!contextInternal) {
+    return NS_OK;
+  }
+  RefPtr<mozilla::gfx::SourceSurface> surface =
+      contextInternal->GetSurfaceSnapshot();
+  if (!surface) {
+    return NS_OK;
+  }
+  nsRefPtr<gfxDrawable> drawable =
+      new gfxSurfaceDrawable(surface, ThebesIntSize(surface->GetSize()));
+  nsCOMPtr<imgIContainer> container = ImageOps::CreateFromDrawable(drawable);
+  container.forget(aContainer);
   return NS_OK;
 }
 
