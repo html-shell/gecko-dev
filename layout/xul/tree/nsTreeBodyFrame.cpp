@@ -2113,12 +2113,13 @@ nsTreeBodyFrame::GetImage(int32_t aRowIndex, nsTreeColumn* aCol, bool aUseContex
   *aResult = nullptr;
 
   nsAutoString imageSrc;
-  mView->GetImageSrc(aRowIndex, aCol, imageSrc);
-  nsRefPtr<imgRequestProxy> styleRequest;
-  if (!aUseContext && !imageSrc.IsEmpty()) {
-    aAllowImageRegions = false;
+  if (!aUseContext) {
+    mView->GetImageSrc(aRowIndex, aCol, imageSrc);
   }
-  else {
+  nsRefPtr<imgRequestProxy> styleRequest;
+  if (!imageSrc.IsEmpty()) {
+    aAllowImageRegions = false;
+  } else {
     // Obtain the URL from the style context.
     aAllowImageRegions = true;
     styleRequest = aStyleContext->StyleList()->GetListStyleImage();
