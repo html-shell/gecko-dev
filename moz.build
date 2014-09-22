@@ -46,6 +46,9 @@ if CONFIG['COMPILE_ENVIRONMENT'] and not CONFIG['LIBXUL_SDK']:
         add_tier_dir('external', 'config/external')
         add_tier_dir('nss', 'config/external/nss')
 
+    if CONFIG['MOZ_LDAP_XPCOM']:
+        add_tier_dir('nss', 'config/external/ldap')
+
     if CONFIG['BUILD_CTYPES']:
         add_tier_dir('js', ['config/external/ffi'])
     if CONFIG['ENABLE_INTL_API']:
