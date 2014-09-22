@@ -48,6 +48,9 @@ if not CONFIG['JS_STANDALONE']:
         if not CONFIG['MOZ_NATIVE_NSS']:
              add_tier_dir('nss', 'security/build')
 
+        if CONFIG['MOZ_LDAP_XPCOM']:
+            add_tier_dir('nss', 'config/external/ldap')
+
 if CONFIG['COMPILE_ENVIRONMENT'] and not CONFIG['LIBXUL_SDK']:
     if CONFIG['BUILD_CTYPES'] and not CONFIG['MOZ_NATIVE_FFI']:
         add_tier_dir('js', ['js/src/ctypes/libffi'], static=True)
