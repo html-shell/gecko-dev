@@ -1,0 +1,416 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="441414-richtree.css" type="text/css"?>
+
+<window title="Rich Tree Test" width="600" height="600"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+<script type="text/javascript"><![CDATA[
+var Cc = Components.classes;
+var Ci = Components.interfaces;
+var Cu = Components.utils;
+
+var gIdx=[{
+    isRead: true,
+    hasAttachment: true,
+    subjectCol: 'Hello, Gmail',
+    dateCol: '2014-08-15 17:10',
+    senderCol: 'Earth',
+    description: 'Comes from gmail.'
+  },{
+    isRead: false,
+    hasAttachment: false,
+    subjectCol: 'Hello, Gmail',
+    dateCol: '17:10',
+    senderCol: 'Marks',
+    description: 'Comes from gmail.'
+  }
+];
+
+var treeView = {
+  _rowCount: 0,
+  updateRowCount: function() {
+    this._rowCount = 19173966; //2147483647,19173966, 19173961.133928571428571428571429
+  },
+
+  // nsISupports
+  QueryInterface: function(aIID) {
+    if (aIID.equals(Ci.nsITreeView) ||
+        aIID.equals(Ci.nsISupports))
+      return this;
+    throw Components.results.NS_NOINTERFACE;
+  },
+
+  // nsITreeView
+  treeBox: null,
+  selection: null,
+
+  get rowCount()                     { return this._rowCount },
+  setTree: function(treeBox)         { this.treeBox = treeBox; },
+  getCellText: function(idx, column) {
+    var node;
+    if (idx <= 1) {
+      node = gIdx[idx];
+    } else {
+      node = gIdx[0];
+    }
+    if (column.id == "subjectCol")
+      return node.subjectCol;
+    if (column.id == "dateCol")
+      return node.dateCol;
+    if (column.id == "senderCol")
+      return "senderCol";
+
+    if (column.id == "description")
+      return node.description;
+    return "";
+  },
+  isContainer: function(idx)         { return false; },
+  isContainerOpen: function(idx)     { return false; },
+  isContainerEmpty: function(idx)    { return true; },
+  isSeparator: function(idx)         { return false; },
+  isSorted: function()               { return true; },
+  isEditable: function(idx, column)  { return false; },
+
+  getParentIndex: function(idx) { return -1; },
+  getLevel: function(idx) { return 0; },
+  hasNextSibling: function(idx, after) { return false; },
+  toggleOpenState: function(idx) {},
+
+  getImageSrc: function(idx, column) {},
+  getProgressMode : function(idx,column) {},
+  getCellValue: function(idx, column) {},
+  cycleHeader: function(col, elem) {},
+  selectionChanged: function() {},
+  cycleCell: function(idx, column) {},
+  performAction: function(action) {},
+  performActionOnCell: function(action, index, column) {},
+
+  getRowProperties: function(idx) {
+    return 'richrowtitle richrowsubheader richrowsubheader';
+  },
+  getCellProperties: function(idx, column) {
+    var node;
+    if (idx <= 1) {
+      node = gIdx[idx];
+    } else {
+      node = gIdx[0];
+    }
+    var ret = "";
+    if (node.isRead) {
+      ret += "read ";
+    } else {
+      ret += "unread ";
+    }
+    if (node.hasAttachment) {
+      ret += "attach";
+    }
+    return ret;
+  },
+  getColumnProperties: function(column, element) {},
+};
+
+function onStart() {
+  treeView.updateRowCount();
+  var treeBoxObject= document.getElementById("threadTree");
+  initThreadTree("threadTree", "threadTreeBody");
+  treeBoxObject.view = treeView;
+}
+
+window.addEventListener("load", onStart, true);
+
+function initThreadTree(threadTreeId, threadTreeBodyId) {
+  treeCellCanvas.initialize(document.getElementById(threadTreeId),
+      document.getElementById(threadTreeBodyId));
+}
+
+// First, checks if it isn't implemented yet.
+if (typeof String.prototype.format != 'function') {
+  String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) {
+      let val = args[number];
+      let valType = (typeof val);
+      if (valType == 'undefined') {
+        return '{undefined}';
+      }
+      if (valType == 'string') {
+        return val;
+      }
+      if (valType == 'object') {
+        return JSON.stringify(val);
+      }
+      return val.toString();
+    });
+  };
+}
+
+if (typeof String.prototype.startsWith != 'function') {
+  String.prototype.startsWith = function (str){
+    return this.slice(0, str.length) == str;
+  };
+}
+
+if (typeof String.prototype.endsWith != 'function') {
+  String.prototype.endsWith = function(str){
+    return this.length >= s.length && this.substr(this.length - s.length) == s;
+  }
+}
+
+function propertiesHasAtom(props, atomString) {
+    if (props == atomString) {
+      return true;
+    }
+    if (props.indexOf(' ' + atomString + ' ') >= 0) {
+      return true;
+    }
+    if (props.startsWith(atomString + ' ')) {
+      return true;
+    }
+    if (props.endsWith(' ' + atomString)) {
+      return true;
+    }
+    return false;
+}
+
+function jsdump(str) {
+  Cc['@mozilla.org/consoleservice;1']
+            .getService(Ci.nsIConsoleService)
+            .logStringMessage(str);
+}
+
+function drawText(ctx, text, font, color, align, x, y, maxWidth, crop) {
+  ctx.beginPath();
+  ctx.font = font;
+
+  var measureContent = '';
+  var finalPos = 0;
+  if (crop) {
+    measureContent = '...';
+    if (ctx.measureText(text) <= maxWidth) {
+      finalPos = text.length;
+    }
+  }
+  for (var i = 0; i < text.length && i >= finalPos;) {
+    var ch = text[i];
+    //replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"")
+    //.,-/#!$%^&*;:{}=\-_\'~()]"
+    //' \t\n\r\v'
+
+    measureContent += ch;
+    var metrics = ctx.measureText(measureContent);
+    if (metrics.width > maxWidth) {
+      break;
+    }
+    finalPos = ++i;
+  }
+
+  var renderContent = text.substring(0, finalPos);
+  if (crop && finalPos != text.length) {
+    renderContent += '...';
+  }
+  ctx.textBaseline = 'bottom';
+  ctx.textAlign = align;
+  ctx.fillStyle = color;
+  ctx.fillText(renderContent, x, y);
+  return text.substring(finalPos, text.length);
+}
+
+var treeCellCanvas = {
+  // nsISupports
+  QueryInterface: function(aIID) {
+    if (aIID.equals(Ci.nsITreeCellRenderer) ||
+        aIID.equals(Ci.nsIDOMEventListener) ||
+        aIID.equals(Ci.nsISupports) ||
+        aIID.equals(Ci.nsISupportsWeakReference))
+      return this;
+    throw Components.results.NS_NOINTERFACE;
+  },
+
+  //Private:
+  treeBoxObject: null,
+  treeBody: null,
+  richColumn: null,
+  senderColumn: null,
+  dateColumn: null,
+  subjectColumn: null,
+
+  canvas: null,
+  canvasWidth: 0,
+
+  mousePos: null,
+  currentRow: -1,
+  relativeRow: -1,
+
+  initialize: function(treeElement, treeBody) {
+    this.treeBoxObject = treeElement.treeBoxObject;
+    this.treeBody = treeBody;
+    this.canvas = window.document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
+
+    this.richColumn = this.treeBoxObject.columns.getNamedColumn('richCol');
+    this.canvasWidth = this.richColumn.width - 17; /* The scrollbar width */
+    this.senderColumn = this.treeBoxObject.columns.getNamedColumn('senderCol');
+    this.dateColumn = this.treeBoxObject.columns.getNamedColumn('dateCol');
+    this.subjectColumn = this.treeBoxObject.columns.getNamedColumn('subjectCol');
+
+    //https://developer.mozilla.org/en-US/docs/Web/Events
+    treeElement.addEventListener('click', this, true);
+    treeElement.addEventListener('dblclick', this, false);
+    treeElement.addEventListener('mousemove', this, false);
+    treeElement.addEventListener('mousedown', this, true);
+    treeElement.addEventListener('mouseup', this, false);
+    treeElement.addEventListener('mouseover', this, false);
+    treeElement.addEventListener('mouseout', this, false);
+
+    treeElement.addEventListener('mouseenter', this, false);
+    treeElement.addEventListener('mouseleave', this, false);
+
+    this.treeBoxObject.cellRenderer = this;
+    this.treeBoxObject.invalidate();
+  },
+  invalidateRow: function(row) {
+    if (row >= 0) {
+      this.treeBoxObject.invalidateRow(row);
+    }
+  },
+  //Public:
+  handleEvent: function(e) {
+    if (this.mousePos == null) {
+      this.mousePos = {x:-1, y:-1};
+    }
+    switch (e.type) {
+    default:
+      this.mousePos.x = e.clientX || e.pageX || e.X; 
+      this.mousePos.y = e.clientY || e.pageY || e.Y;
+
+      let posRow = { }, posCol = { }, posChild = { };
+      this.treeBoxObject.getCellAt(this.mousePos.x, this.mousePos.y,
+                                   posRow, posCol, posChild);
+
+      var isSameColumn = posCol.value != null && posCol.value.id == this.richColumn.id;
+
+      let row = posRow.value;
+      if (posCol.value == null) {
+        row = -1;
+      }
+
+      if (row < 0 || row != this.currentRow) {
+        jsdump("{0} {1}:{2} {3} {4} {5}".format(e.type, this.currentRow, row, this.mousePos, posCol.value, isSameColumn));
+      }
+
+      this.currentRow = row;
+      this.relativeRow = row;
+      if (this.relativeRow >= 0) {
+        this.relativeRow -=  this.treeBoxObject.getFirstVisibleRow();
+      }
+      break;
+    }
+  },
+  //nsISupports (ctx) render(in nsITreeView view, in long row, in nsITreeColumn col, in AString props);
+  //The underlying code for view is comn\mailnews\base\src\nsMsgDBView.cpp
+  draw: function(view, row, col, props) {
+    this.canvas.width = this.canvasWidth;
+    this.canvas.height = this.treeBoxObject.rowHeight - 16;
+
+    var ctx = this.canvas.getContext("2d");
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    let hasButton = this.relativeRow == row - this.treeBoxObject.getFirstVisibleRow();
+    let hasHover = propertiesHasAtom(props, 'hover');
+    var selected = propertiesHasAtom(props, 'selected');
+    if (hasButton != hasHover) {
+      jsdump("hover:{0}, button:{1}".format(hasHover, hasButton));
+    }
+    var fillColor = null;
+    if (selected && hasHover) {
+      fillColor = "rgb(228, 228, 228)";
+    } else if (selected && !hasHover) {
+      fillColor = "rgb(221, 221, 221)";
+    } else if (!selected && hasHover) {
+      fillColor = "rgb(235, 235, 235)";
+    }
+    if (!fillColor) {
+      ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    } else {
+      ctx.beginPath();
+      ctx.rect(0, 0, this.canvas.width, this.canvas.height);
+      ctx.fillStyle=fillColor;
+      ctx.fill();
+    }
+
+    var message = row.toString() + " " + props;
+    if (hasButton) {
+      message += " hasButton";
+    }
+
+    var unread = propertiesHasAtom(props, 'unread');
+    var hasAttachments = propertiesHasAtom(props, 'attach');
+
+    if (unread) {
+      ctx.beginPath();
+      ctx.rect(0, 8, 4, 78);
+      ctx.fillStyle="rgb(57,160,87)";
+      ctx.fill();
+    }
+
+    var sender = view.getCellText(row, this.senderColumn);
+    var date = view.getCellText(row, this.dateColumn).split(' ')[0];
+    var title = view.getCellText(row, this.subjectColumn).substring(0, 128);
+
+    ctx.beginPath();
+    ctx.arc(500, 50, row % 10 + 10, 0, 2 * 3.14, false);
+    ctx.fillStyle = 'rgb(0,122,0)';
+    ctx.fill();
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = '#003300';
+    ctx.stroke();
+
+    var textStartX = 12;
+    var textStartY = 8;
+    var senderSize = 14;
+    var titleSize = 14;
+    var summarySize = 12;
+    var titleLineSpacing = 10;
+    var normalLineSpacing = 8;
+
+    var font = 'Calibri, Arial, "Microsoft YaHei", SimSun';
+
+    var senderFont = 'bold {0}px {1}'.format(senderSize, font);
+    var titleFont = '{0}px {1}'.format(titleSize, font);
+    var summaryFont = '{0}px {1}'.format(summarySize, font);
+    var titleColor = 'black';
+    var summaryColor = 'rgb(122,122,122)';
+
+    textStartY += senderSize;
+    drawText(ctx, sender, senderFont, "black", 'left', textStartX, textStartY, 160, true);
+    drawText(ctx, date, titleFont, "black", 'right', this.canvasWidth - 12, textStartY, 78, true);
+
+    textStartY += titleSize + titleLineSpacing;
+    drawText(ctx, title, titleFont , titleColor, 'left', textStartX, textStartY, 200, true);
+    textStartY += summarySize + normalLineSpacing;
+    message = drawText(ctx, message, summaryFont , summaryColor, 'left', textStartX, textStartY, this.canvasWidth - 70, false);
+    textStartY += summarySize + normalLineSpacing;
+    drawText(ctx, message, summaryFont , summaryColor, 'left', textStartX, textStartY, this.canvasWidth - 70, true);
+    let imageTools = Cc["@mozilla.org/image/tools;1"].
+               getService(Ci.imgITools);
+    return imageTools.createImageFromCanvasContext(ctx);
+  }
+}
+]]></script>
+
+  <keyset>
+    <key key="W" modifiers="accel" oncommand="window.close();"/>
+  </keyset>
+  <hbox flex="1">
+    <tree id="threadTree" width="600" hidecolumnpicker="true">
+      <treecols>
+        <treecol hideheader="true" id="richCol" flex="1" type="renderer" ignoreincolumnpicker="true" />
+        <treecol hidden="true" hideheader="true" id="senderCol" flex="1" type="rich" ignoreincolumnpicker="true" />
+        <treecol hidden="true" hideheader="true" id="dateCol" flex="1" type="rich" ignoreincolumnpicker="true" />
+        <treecol hidden="true" hideheader="true" id="subjectCol" flex="1" type="rich" ignoreincolumnpicker="true" />
+      </treecols>
+      <treechildren id="threadTreeBody" />
+    </tree>
+    <hbox flex="1" />
+  </hbox>
+</window>
