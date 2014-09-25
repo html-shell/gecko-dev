@@ -7,6 +7,9 @@
 #ifndef mozilla__CryptoTask_h
 #define mozilla__CryptoTask_h
 
+#include <string>
+using std::string;
+
 #include "mozilla/Attributes.h"
 #include "nsThreadUtils.h"
 #include "nsNSSShutDown.h"
@@ -46,13 +49,15 @@ class CryptoTask : public nsRunnable,
 {
 public:
   template <size_t LEN>
+  inline
   nsresult Dispatch(const char (&taskThreadName)[LEN])
   {
     static_assert(LEN <= 15,
                   "Thread name must be no more than 15 characters");
-    return Dispatch(NS_LITERAL_CSTRING(taskThreadName));
+    return Dispatch(string(taskThreadName));
   }
 
+  nsresult Dispatch(const string& taskThreadName);
   nsresult Dispatch(const nsACString& taskThreadName);
 
   void Skip()

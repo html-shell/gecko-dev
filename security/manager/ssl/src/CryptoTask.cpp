@@ -20,6 +20,12 @@ CryptoTask::~CryptoTask()
 }
 
 nsresult
+CryptoTask::Dispatch(const string& taskThreadName)
+{
+  return Dispatch(nsCString(taskThreadName.c_str(), taskThreadName.size()));
+}
+
+nsresult
 CryptoTask::Dispatch(const nsACString& taskThreadName)
 {
   MOZ_ASSERT(taskThreadName.Length() <= 15);
