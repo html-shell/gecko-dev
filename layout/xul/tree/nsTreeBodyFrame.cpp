@@ -61,6 +61,8 @@
 #include "nsIScriptableRegion.h"
 #include <algorithm>
 #include "ScrollbarActivity.h"
+#include <gfxDrawable.h>
+#include <nsICanvasRenderingContextInternal.h>
 
 #ifdef ACCESSIBILITY
 #include "nsAccessibilityService.h"
@@ -2308,7 +2310,7 @@ nsRect nsTreeBodyFrame::GetImageSize(int32_t aRowIndex, nsTreeColumn* aCol, bool
 nsSize
 nsTreeBodyFrame::GetImageDestSize(nsStyleContext* aStyleContext,
                                   bool useImageRegion,
-                                  imgIContainer* image)
+                                  nsIntSize* contentSize)
 {
   nsSize size(0,0);
 
@@ -2349,10 +2351,8 @@ nsTreeBodyFrame::GetImageDestSize(nsStyleContext* aStyleContext,
       // Use the width of the image region.
       imageSize.width = myList->mImageRegion.width;
     }
-    else if (image) {
-      nscoord width;
-      image->GetWidth(&width);
-      imageSize.width = nsPresContext::CSSPixelsToAppUnits(width);
+    else if (contentSize) {
+      imageSize.width = nsPresContext::CSSPixelsToAppUnits(contentSize->width);
     }
 
     if (useImageRegion && myList->mImageRegion.height > 0) {
@@ -2360,10 +2360,8 @@ nsTreeBodyFrame::GetImageDestSize(nsStyleContext* aStyleContext,
       // Use the height of the image region.
       imageSize.height = myList->mImageRegion.height;
     }
-    else if (image) {
-      nscoord height;
-      image->GetHeight(&height);
-      imageSize.height = nsPresContext::CSSPixelsToAppUnits(height);
+    else if (contentSize) {
+      imageSize.height = nsPresContext::CSSPixelsToAppUnits(contentSize->height);
     }
 
     if (needWidth) {
@@ -2404,7 +2402,7 @@ nsTreeBodyFrame::GetImageDestSize(nsStyleContext* aStyleContext,
 nsRect
 nsTreeBodyFrame::GetImageSourceRect(nsStyleContext* aStyleContext,
                                     bool useImageRegion,
-                                    imgIContainer* image)
+                                    nsIntSize* contentSize)
 {
   nsRect r(0,0,0,0);
 
@@ -2415,13 +2413,9 @@ nsTreeBodyFrame::GetImageSourceRect(nsStyleContext* aStyleContext,
     // CSS has specified an image region.
     r = myList->mImageRegion;
   }
-  else if (image) {
+  else if (contentSize) {
     // Use the actual image size.
-    nscoord coord;
-    image->GetWidth(&coord);
-    r.width = nsPresContext::CSSPixelsToAppUnits(coord);
-    image->GetHeight(&coord);
-    r.height = nsPresContext::CSSPixelsToAppUnits(coord);
+    r.SizeTo(contentSize->ToAppUnits(nsPresContext::AppUnitsPerCSSPixel()));
   }
 
   return r;
@@ -3260,7 +3254,7 @@ nsTreeBodyFrame::PaintCell(int32_t              aRowIndex,
   nsRect dirtyRect;
   if (dirtyRect.IntersectRect(aDirtyRect, iconRect))
     PaintImage(aRowIndex, aColumn, iconRect, aPresContext, aRenderingContext, aDirtyRect,
-               remainingWidth, currX);
+               remainingWidth, currX, false);
 
   // Now paint our element, but only if we aren't a cycler column.
   // XXX until we have the ability to load images, allow the view to 
@@ -3269,7 +3263,11 @@ nsTreeBodyFrame::PaintCell(int32_t              aRowIndex,
     nsRect elementRect(currX, cellRect.y, remainingWidth, cellRect.height);
     nsRect dirtyRect;
     if (dirtyRect.IntersectRect(aDirtyRect, elementRect)) {
-      switch (aColumn->GetType()) {
+      int16_t cellType = aColumn->GetType();
+      if (mScratchArray.Contains(nsGkAtoms::renderer)) {
+        cellType = nsITreeColumn::TYPE_RENDERER;
+      }
+      switch (cellType) {
         case nsITreeColumn::TYPE_TEXT:
           PaintText(aRowIndex, aColumn, elementRect, aPresContext, aRenderingContext, aDirtyRect, currX);
           break;
@@ -3289,6 +3287,10 @@ nsTreeBodyFrame::PaintCell(int32_t              aRowIndex,
               PaintText(aRowIndex, aColumn, elementRect, aPresContext, aRenderingContext, aDirtyRect, currX);
               break;
           }
+          break;
+        case nsITreeColumn::TYPE_RENDERER:
+          PaintImage(aRowIndex, aColumn, elementRect, aPresContext, aRenderingContext, aDirtyRect,
+            remainingWidth, currX, true);
           break;
       }
     }
@@ -3395,17 +3397,23 @@ nsTreeBodyFrame::PaintImage(int32_t              aRowIndex,
                             nsTreeColumn*        aColumn,
                             const nsRect&        aImageRect,
                             nsPresContext*       aPresContext,
-                            nsRenderingContext& aRenderingContext,
+                            nsRenderingContext&  aRenderingContext,
                             const nsRect&        aDirtyRect,
                             nscoord&             aRemainingWidth,
-                            nscoord&             aCurrX)
+                            nscoord&             aCurrX,
+                            bool                 isCanvas)
 {
   NS_PRECONDITION(aColumn && aColumn->GetFrame(), "invalid column passed");
 
   bool isRTL = StyleVisibility()->mDirection == NS_STYLE_DIRECTION_RTL;
   nscoord rightEdge = aCurrX + aRemainingWidth;
-  // Resolve style for the image.
-  nsStyleContext* imageContext = GetPseudoStyleContext(nsCSSAnonBoxes::moztreeimage);
+  // Resolve style for the image or canvas.
+  nsStyleContext* imageContext = NULL;
+  if (isCanvas) {
+    imageContext = GetPseudoStyleContext(nsCSSAnonBoxes::moztreerenderer);
+  } else {
+    imageContext = GetPseudoStyleContext(nsCSSAnonBoxes::moztreeimage);
+  }
 
   // Obtain opacity value for the image.
   float opacity = imageContext->StyleDisplay()->mOpacity;
@@ -3420,10 +3428,36 @@ nsTreeBodyFrame::PaintImage(int32_t              aRowIndex,
   // Get the image.
   bool useImageRegion = true;
   nsCOMPtr<imgIContainer> image;
-  GetImage(aRowIndex, aColumn, false, imageContext, useImageRegion, getter_AddRefs(image));
+  RefPtr<mozilla::gfx::SourceSurface> surface;
+  nsIntSize contentSize(0, 0);
+  nsIntSize *contentSizePtr = NULL;
+
+  if (!isCanvas) {
+    GetImage(aRowIndex, aColumn, false, imageContext, useImageRegion, getter_AddRefs(image));
+    if (image) {
+      image->GetWidth(&contentSize.width);
+      image->GetHeight(&contentSize.height);
+      contentSizePtr = &contentSize;
+    }
+  } else {
+    nsCOMPtr<nsISupports> canvasContext;
+    if (mCellRenderer) {
+      nsAutoString properties = nsTreeUtils::StringizeProperties(mScratchArray);
+      mCellRenderer->Draw(mView, aRowIndex, aColumn, properties, getter_AddRefs(canvasContext));
+    }
+    nsCOMPtr<nsICanvasRenderingContextInternal> ctxInternal = do_QueryInterface(canvasContext);
+    if (ctxInternal) {
+      surface = ctxInternal->GetSurfaceSnapshot();
+    }
+    if (surface) {
+      auto surfaceSize = surface->GetSize();
+      contentSize.SizeTo(surfaceSize.width, surfaceSize.height);
+      contentSizePtr = &contentSize;
+    }
+  }
 
   // Get the image destination size.
-  nsSize imageDestSize = GetImageDestSize(imageContext, useImageRegion, image);
+  nsSize imageDestSize = GetImageDestSize(imageContext, useImageRegion, contentSizePtr);
   if (!imageDestSize.width || !imageDestSize.height)
     return;
 
@@ -3461,7 +3495,7 @@ nsTreeBodyFrame::PaintImage(int32_t              aRowIndex,
     }
   }
 
-  if (image) {
+  if (contentSizePtr) {
     if (isRTL)
       imageRect.x = rightEdge - imageRect.width;
     // Paint our borders and background for our image rect
@@ -3499,7 +3533,7 @@ nsTreeBodyFrame::PaintImage(int32_t              aRowIndex,
     // Get the image source rectangle - the rectangle containing the part of
     // the image that we are going to display.
     // sourceRect will be passed as the aSrcRect argument in the DrawImage method.
-    nsRect sourceRect = GetImageSourceRect(imageContext, useImageRegion, image);
+    nsRect sourceRect = GetImageSourceRect(imageContext, useImageRegion, contentSizePtr);
 
     // Let's say that the image is 100 pixels tall and
     // that the CSS has specified that the destination height should be 50
@@ -3509,23 +3543,30 @@ nsTreeBodyFrame::PaintImage(int32_t              aRowIndex,
     // Essentially, we are scaling the image as dictated by the CSS destination
     // height and width, and we are then clipping the scaled image by the cell
     // width and height.
-    nsIntSize rawImageSize;
-    image->GetWidth(&rawImageSize.width);
-    image->GetHeight(&rawImageSize.height);
     nsRect wholeImageDest =
-      nsLayoutUtils::GetWholeImageDestination(rawImageSize, sourceRect,
+      nsLayoutUtils::GetWholeImageDestination(contentSize, sourceRect,
           nsRect(destRect.TopLeft(), imageDestSize));
 
     gfxContext* ctx = aRenderingContext.ThebesContext();
     if (opacity != 1.0f) {
       ctx->PushGroup(gfxContentType::COLOR_ALPHA);
     }
-
-    nsLayoutUtils::DrawImage(&aRenderingContext, image,
-        nsLayoutUtils::GetGraphicsFilterForFrame(this),
-        wholeImageDest, destRect, destRect.TopLeft(), aDirtyRect,
-        imgIContainer::FLAG_NONE);
-
+    if (!isCanvas) {
+      nsLayoutUtils::DrawImage(&aRenderingContext, image,
+          nsLayoutUtils::GetGraphicsFilterForFrame(this),
+          wholeImageDest, destRect, destRect.TopLeft(), aDirtyRect,
+          imgIContainer::FLAG_NONE);
+    } else {
+      nsRefPtr<gfxDrawable> drawable =
+          new gfxSurfaceDrawable(surface, ThebesIntSize(surface->GetSize()));
+      nsLayoutUtils::DrawPixelSnapped(&aRenderingContext,
+          drawable,
+          nsLayoutUtils::GetGraphicsFilterForFrame(this),
+          wholeImageDest,
+          destRect,
+          destRect.TopLeft(),
+          aDirtyRect);
+    }
     if (opacity != 1.0f) {
       ctx->PopGroupToSource();
       ctx->Paint(opacity);
@@ -4684,5 +4725,23 @@ nsTreeBodyFrame::OnImageIsAnimated(imgIRequest* aRequest)
   nsLayoutUtils::RegisterImageRequest(PresContext(),
                                       aRequest, nullptr);
 
+  return NS_OK;
+}
+
+nsresult
+nsTreeBodyFrame::GetCellRenderer(nsITreeCellRenderer** aCellRenderer)
+{
+  nsWeakFrame weakFrame(this);
+  NS_ENSURE_STATE(weakFrame.IsAlive());
+  nsCOMPtr<nsITreeCellRenderer> renderer = mCellRenderer;
+  renderer.forget(aCellRenderer);
+  return NS_OK;
+}
+
+nsresult
+nsTreeBodyFrame::SetCellRenderer(nsITreeCellRenderer* aCellRenderer)
+{
+  NS_ENSURE_ARG_POINTER(aCellRenderer);
+  mCellRenderer = aCellRenderer;
   return NS_OK;
 }

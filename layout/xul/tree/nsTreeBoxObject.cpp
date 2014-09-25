@@ -490,3 +490,22 @@ NS_NewTreeBoxObject(nsIBoxObject** aResult)
   return NS_OK;
 }
 
+NS_IMETHODIMP
+nsTreeBoxObject::GetCellRenderer(nsITreeCellRenderer** aCellRenderer)
+{
+  nsTreeBodyFrame* body = GetTreeBody();
+  if (body) {
+    return body->GetCellRenderer(aCellRenderer);
+  }
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsTreeBoxObject::SetCellRenderer(nsITreeCellRenderer* aCellRenderer)
+{
+  nsTreeBodyFrame* body = GetTreeBody();
+  if (body) {
+    return body->SetCellRenderer(aCellRenderer);
+  }
+  return NS_OK;
+}

@@ -119,6 +119,8 @@ public:
   nsresult BeginUpdateBatch();
   nsresult EndUpdateBatch();
   nsresult ClearStyleAndImageCaches();
+  nsresult GetCellRenderer(nsITreeCellRenderer** aCellRenderer);
+  nsresult SetCellRenderer(nsITreeCellRenderer* aCellRenderer);
 
   void ManageReflowCallback(const nsRect& aRect, nscoord aHorzWidth);
 
@@ -239,7 +241,8 @@ protected:
                   nsRenderingContext& aRenderingContext,
                   const nsRect&        aDirtyRect,
                   nscoord&             aRemainingWidth,
-                  nscoord&             aCurrX);
+                  nscoord&             aCurrX,
+                  bool                 isCanvas);
 
   // This method paints the text string inside a particular cell of the tree.
   void PaintText(int32_t              aRowIndex, 
@@ -322,10 +325,10 @@ protected:
   nsRect GetImageSize(int32_t aRowIndex, nsTreeColumn* aCol, bool aUseContext, nsStyleContext* aStyleContext);
 
   // Returns the destination size of the image, not including borders and padding.
-  nsSize GetImageDestSize(nsStyleContext* aStyleContext, bool useImageRegion, imgIContainer* image);
+  nsSize GetImageDestSize(nsStyleContext* aStyleContext, bool useImageRegion, nsIntSize* contentSize);
 
   // Returns the source rectangle of the image to be displayed.
-  nsRect GetImageSourceRect(nsStyleContext* aStyleContext, bool useImageRegion, imgIContainer* image);
+  nsRect GetImageSourceRect(nsStyleContext* aStyleContext, bool useImageRegion, nsIntSize* contentSize);
 
   // Returns the height of rows in the tree.
   int32_t GetRowHeight();
@@ -629,6 +632,10 @@ protected: // Data Members
   // have pointers to us.
   nsTHashtable<nsPtrHashKey<nsTreeImageListener> > mCreatedListeners;
 
+  // This is a external tree cell render, it's will rendering the cell
+  // content, and resulting imgIContainer, the rendering progress will
+  // be canvas or other ways.
+  nsCOMPtr<nsITreeCellRenderer> mCellRenderer;
 }; // class nsTreeBodyFrame
 
 #endif
