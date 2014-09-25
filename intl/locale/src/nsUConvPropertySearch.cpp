@@ -4,7 +4,6 @@
 
 #include "nsUConvPropertySearch.h"
 #include "nsCRT.h"
-#include "nsString.h"
 
 // static
 nsresult
@@ -32,4 +31,17 @@ nsUConvPropertySearch::SearchPropertyValue(const char* aProperties[][3],
   }
   aValue.Truncate();
   return NS_ERROR_FAILURE;
+}
+
+// static
+nsresult
+nsUConvPropertySearch::SearchPropertyValue(const char* aProperties[][3],
+                                           int32_t aNumberOfProperties,
+                                           const string& aKey,
+                                           string& aValue)
+{
+  nsAutoCString value;
+  nsresult ret = SearchPropertyValue(aProperties, aNumberOfProperties, nsCString(aKey.c_str(), aKey.size()), value);
+  aValue = value.get();
+  return ret;
 }

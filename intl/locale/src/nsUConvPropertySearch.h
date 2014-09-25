@@ -5,7 +5,9 @@
 #ifndef nsUConvPropertySearch_h_
 #define nsUConvPropertySearch_h_
 
+#include <string>
 #include "nsStringGlue.h"
+using std::string;
 
 class nsUConvPropertySearch
 {
@@ -25,6 +27,11 @@ class nsUConvPropertySearch
                                         int32_t aNumberOfProperties,
                                         const nsACString& aKey,
                                         nsACString& aValue);
+
+    static nsresult SearchPropertyValue(const char* aProperties[][3],
+                                        int32_t aNumberOfProperties,
+                                        const string& aKey,
+                                        string& aValue);
 };
 
 #endif /* nsUConvPropertySearch_h_ */
