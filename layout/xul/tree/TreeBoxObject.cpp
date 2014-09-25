@@ -203,6 +203,23 @@ void TreeBoxObject::SetView(nsITreeView* aView, ErrorResult& aRv)
   aRv = SetView(aView);
 }
 
+NS_IMETHODIMP TreeBoxObject::GetCellRenderer(nsITreeCellRenderer * *aCellRenderer)
+{
+  nsTreeBodyFrame* body = GetTreeBodyFrame();
+  if (body) {
+    return body->GetCellRenderer(aCellRenderer);
+  }
+  return NS_OK;
+}
+NS_IMETHODIMP TreeBoxObject::SetCellRenderer(nsITreeCellRenderer *aCellRenderer)
+{
+  nsTreeBodyFrame* body = GetTreeBodyFrame();
+  if (body) {
+    return body->SetCellRenderer(aCellRenderer);
+  }
+  return NS_OK;
+}
+
 bool TreeBoxObject::Focused()
 {
   nsTreeBodyFrame* body = GetTreeBodyFrame();
