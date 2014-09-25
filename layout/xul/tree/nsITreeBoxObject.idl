@@ -5,6 +5,7 @@
 
 #include "nsISupports.idl"
 
+interface imgIContainer;
 interface nsIDOMElement;
 interface nsITreeView;
 interface nsITreeSelection;
@@ -12,7 +13,17 @@ interface nsITreeColumn;
 interface nsITreeColumns;
 interface nsIScriptableRegion;
 
-[scriptable, uuid(f3da0c5e-51f5-45f0-b2cd-6be3ab6847ae)]
+[scriptable, uuid(aceed5f8-e57a-4cdc-b859-cf864904ab1c)]
+interface nsITreeCellRenderer : nsISupports
+{
+  /**
+  * Rendering a tree cell's content at the position (row,col), returning
+  * the imgIContainer of the drawn result.
+  */
+  imgIContainer draw(in nsITreeView view, in long row, in nsITreeColumn col, in AString props);
+};
+
+[scriptable, uuid(0c984c61-ebc3-4332-b40b-64d942826fa1)]
 interface nsITreeBoxObject : nsISupports
 {
   /**
@@ -26,6 +37,12 @@ interface nsITreeBoxObject : nsISupports
    * tree tag or by setting this attribute to a new value.
    */
   attribute nsITreeView view;
+
+  /**
+  * The canvas handler for rich cell, to rendering anything that canvs
+  * support, we can use this to rendering beatiful tree cell.
+  */
+  attribute nsITreeCellRenderer cellRenderer;
 
   /**
    * Whether or not we are currently focused.

@@ -46,6 +46,10 @@ public:
 
   void SetView(nsITreeView* arg, ErrorResult& aRv);
 
+  already_AddRefed<nsITreeCellRenderer> GetCellRenderer();
+
+  void SetCellRenderer(nsITreeCellRenderer* arg, ErrorResult& aRv);
+
   bool Focused();
 
   already_AddRefed<Element> GetTreeBody();

@@ -3303,9 +3303,16 @@ nsTreeBodyFrame::PaintCell(int32_t              aRowIndex,
   // Now paint the icon for our cell.
   nsRect iconRect(currX, cellRect.y, remainingWidth, cellRect.height);
   nsRect dirtyRect;
-  if (dirtyRect.IntersectRect(aDirtyRect, iconRect))
-    PaintImage(aRowIndex, aColumn, iconRect, aPresContext, aRenderingContext, aDirtyRect,
-               remainingWidth, currX);
+  if (dirtyRect.IntersectRect(aDirtyRect, iconRect)) {
+    // Resolve style for the image.
+    nsStyleContext* imageContext = GetPseudoStyleContext(nsCSSAnonBoxes::moztreeimage);
+    // Get the image.
+    bool useImageRegion = true;
+    nsCOMPtr<imgIContainer> image;
+    GetImage(aRowIndex, aColumn, false, imageContext, useImageRegion, getter_AddRefs(image));
+    PaintImage(image, aColumn, iconRect, aPresContext, aRenderingContext,
+        imageContext, aDirtyRect, remainingWidth, currX, useImageRegion);
+  }
 
   // Now paint our element, but only if we aren't a cycler column.
   // XXX until we have the ability to load images, allow the view to 
@@ -3314,7 +3321,11 @@ nsTreeBodyFrame::PaintCell(int32_t              aRowIndex,
     nsRect elementRect(currX, cellRect.y, remainingWidth, cellRect.height);
     nsRect dirtyRect;
     if (dirtyRect.IntersectRect(aDirtyRect, elementRect)) {
-      switch (aColumn->GetType()) {
+      int16_t cellType = aColumn->GetType();
+      if (mScratchArray.Contains(nsGkAtoms::renderer)) {
+        cellType = nsITreeColumn::TYPE_RENDERER;
+      }
+      switch (cellType) {
         case nsITreeColumn::TYPE_TEXT:
           PaintText(aRowIndex, aColumn, elementRect, aPresContext, aRenderingContext, aDirtyRect, currX);
           break;
@@ -3335,6 +3346,24 @@ nsTreeBodyFrame::PaintCell(int32_t              aRowIndex,
               break;
           }
           break;
+        case nsITreeColumn::TYPE_RENDERER: {
+          // Resolve style for the renderer.
+          nsStyleContext* rendererContext = GetPseudoStyleContext(nsCSSAnonBoxes::moztreerenderer);
+          bool useImageRegion = true;
+          nsCOMPtr<imgIContainer> image;
+          if (mCellRenderer) {
+            nsAutoString properties = nsTreeUtils::StringizeProperties(mScratchArray);
+            mCellRenderer->Draw(mView, aRowIndex, aColumn, properties, getter_AddRefs(image));
+          }
+          if (image) {
+            useImageRegion = false;
+          } else {
+            GetImage(aRowIndex, aColumn, true, rendererContext, useImageRegion, getter_AddRefs(image));
+          }
+          PaintImage(image, aColumn, iconRect, aPresContext, aRenderingContext,
+              rendererContext, aDirtyRect, remainingWidth, currX, useImageRegion);
+          break;
+        }
       }
     }
   }
@@ -3437,21 +3466,22 @@ nsTreeBodyFrame::PaintTwisty(int32_t              aRowIndex,
 }
 
 void
-nsTreeBodyFrame::PaintImage(int32_t              aRowIndex,
+nsTreeBodyFrame::PaintImage(imgIContainer*       aImage,
                             nsTreeColumn*        aColumn,
                             const nsRect&        aImageRect,
                             nsPresContext*       aPresContext,
-                            nsRenderingContext& aRenderingContext,
+                            nsRenderingContext&  aRenderingContext,
+                            nsStyleContext*      aStyleContext,
                             const nsRect&        aDirtyRect,
                             nscoord&             aRemainingWidth,
-                            nscoord&             aCurrX)
+                            nscoord&             aCurrX,
+                            bool                 aUseImageRegion)
 {
   NS_PRECONDITION(aColumn && aColumn->GetFrame(), "invalid column passed");
 
   bool isRTL = StyleVisibility()->mDirection == NS_STYLE_DIRECTION_RTL;
   nscoord rightEdge = aCurrX + aRemainingWidth;
-  // Resolve style for the image.
-  nsStyleContext* imageContext = GetPseudoStyleContext(nsCSSAnonBoxes::moztreeimage);
+  nsStyleContext* imageContext = aStyleContext;
 
   // Obtain opacity value for the image.
   float opacity = imageContext->StyleDisplay()->mOpacity;
@@ -3463,10 +3493,8 @@ nsTreeBodyFrame::PaintImage(int32_t              aRowIndex,
   imageContext->StyleMargin()->GetMargin(imageMargin);
   imageRect.Deflate(imageMargin);
 
-  // Get the image.
-  bool useImageRegion = true;
-  nsCOMPtr<imgIContainer> image;
-  GetImage(aRowIndex, aColumn, false, imageContext, useImageRegion, getter_AddRefs(image));
+  bool useImageRegion = aUseImageRegion;
+  nsCOMPtr<imgIContainer> image = aImage;
 
   // Get the image destination size.
   nsSize imageDestSize = GetImageDestSize(imageContext, useImageRegion, image);
@@ -4768,5 +4796,23 @@ nsTreeBodyFrame::OnImageIsAnimated(imgIRequest* aRequest)
   nsLayoutUtils::RegisterImageRequest(PresContext(),
                                       aRequest, nullptr);
 
+  return NS_OK;
+}
+
+nsresult
+nsTreeBodyFrame::GetCellRenderer(nsITreeCellRenderer** aCellRenderer)
+{
+  nsWeakFrame weakFrame(this);
+  NS_ENSURE_STATE(weakFrame.IsAlive());
+  nsCOMPtr<nsITreeCellRenderer> renderer = mCellRenderer;
+  renderer.forget(aCellRenderer);
+  return NS_OK;
+}
+
+nsresult
+nsTreeBodyFrame::SetCellRenderer(nsITreeCellRenderer* aCellRenderer)
+{
+  NS_ENSURE_ARG_POINTER(aCellRenderer);
+  mCellRenderer = aCellRenderer;
   return NS_OK;
 }

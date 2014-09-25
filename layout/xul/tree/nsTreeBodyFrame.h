@@ -118,6 +118,8 @@ public:
   nsresult BeginUpdateBatch();
   nsresult EndUpdateBatch();
   nsresult ClearStyleAndImageCaches();
+  nsresult GetCellRenderer(nsITreeCellRenderer** aCellRenderer);
+  nsresult SetCellRenderer(nsITreeCellRenderer* aCellRenderer);
 
   void ManageReflowCallback(const nsRect& aRect, nscoord aHorzWidth);
 
@@ -236,14 +238,16 @@ protected:
                    nscoord&             aCurrX);
 
   // This method paints the image inside the cell of an tree.
-  void PaintImage(int32_t              aRowIndex,
+  void PaintImage(imgIContainer*       aImage,
                   nsTreeColumn*        aColumn,
                   const nsRect&        aImageRect,
-                  nsPresContext*      aPresContext,
-                  nsRenderingContext& aRenderingContext,
+                  nsPresContext*       aPresContext,
+                  nsRenderingContext&  aRenderingContext,
+                  nsStyleContext*      aStyleContext,
                   const nsRect&        aDirtyRect,
                   nscoord&             aRemainingWidth,
-                  nscoord&             aCurrX);
+                  nscoord&             aCurrX,
+                  bool                 aUseImageRegion);
 
   // This method paints the text string inside a particular cell of the tree.
   void PaintText(int32_t              aRowIndex, 
@@ -631,6 +635,10 @@ protected: // Data Members
   // have pointers to us.
   nsTHashtable<nsPtrHashKey<nsTreeImageListener> > mCreatedListeners;
 
+  // This is a external tree cell render, it's will rendering the cell
+  // content, and resulting imgIContainer, the rendering progress will
+  // be canvas or other ways.
+  nsCOMPtr<nsITreeCellRenderer> mCellRenderer;
 }; // class nsTreeBodyFrame
 
 #endif
