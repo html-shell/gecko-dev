@@ -7,6 +7,7 @@
 
 interface MozTreeView;
 interface nsIScriptableRegion;
+interface nsITreeCellRenderer;
 
 dictionary TreeCellInfo {
     long row = 0;
@@ -29,6 +30,9 @@ interface TreeBoxObject : BoxObject {
    */
   [SetterThrows]
   attribute MozTreeView? view;
+
+  [SetterThrows]
+  attribute nsITreeCellRenderer? cellRenderer;
 
   /**
    * Whether or not we are currently focused.
