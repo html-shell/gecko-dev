@@ -101,12 +101,12 @@ public:
   nsresult StartDrag(nsIDOMEvent* aEvent);
   nsresult StopDrag();
 
-  static int32_t GetCurrentPosition(nsIContent* content);
-  static int32_t GetMinPosition(nsIContent* content);
-  static int32_t GetMaxPosition(nsIContent* content);
-  static int32_t GetIncrement(nsIContent* content);
-  static int32_t GetPageIncrement(nsIContent* content);
-  static int32_t GetIntegerAttribute(nsIContent* content, nsIAtom* atom, int32_t defaultValue);
+  static int64_t GetCurrentPosition(nsIContent* content);
+  static int64_t GetMinPosition(nsIContent* content);
+  static int64_t GetMaxPosition(nsIContent* content);
+  static int64_t GetIncrement(nsIContent* content);
+  static int64_t GetPageIncrement(nsIContent* content);
+  static int64_t GetIntegerAttribute(nsIContent* content, nsIAtom* atom, int64_t defaultValue);
   void EnsureOrient();
 
   NS_IMETHOD HandlePress(nsPresContext* aPresContext,
@@ -143,8 +143,8 @@ private:
   void PageUpDown(nscoord change);
   void SetCurrentThumbPosition(nsIContent* aScrollbar, nscoord aNewPos, bool aIsSmooth,
                                bool aMaySnap);
-  void SetCurrentPosition(nsIContent* aScrollbar, int32_t aNewPos, bool aIsSmooth);
-  void SetCurrentPositionInternal(nsIContent* aScrollbar, int32_t pos,
+  void SetCurrentPosition(nsIContent* aScrollbar, int64_t aNewPos, bool aIsSmooth);
+  void SetCurrentPositionInternal(nsIContent* aScrollbar, int64_t pos,
                                   bool aIsSmooth);
   void CurrentPositionChanged();
 
@@ -173,7 +173,7 @@ private:
   nscoord mDragStart;
   nscoord mThumbStart;
 
-  int32_t mCurPos;
+  int64_t mCurPos;
 
   nscoord mChange;
 

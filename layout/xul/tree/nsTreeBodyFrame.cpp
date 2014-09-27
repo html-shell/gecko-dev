@@ -859,7 +859,7 @@ nsTreeBodyFrame::UpdateScrollbars(const ScrollParts& aParts)
 
   if (aParts.mVScrollbar) {
     nsAutoString curPos;
-    curPos.AppendInt(mTopRowIndex*rowHeightAsPixels);
+    curPos.AppendInt((int64_t)mTopRowIndex*rowHeightAsPixels);
     aParts.mVScrollbarContent->
       SetAttr(kNameSpaceID_None, nsGkAtoms::curpos, curPos, true);
     // 'this' might be deleted here
@@ -867,7 +867,7 @@ nsTreeBodyFrame::UpdateScrollbars(const ScrollParts& aParts)
 
   if (weakFrame.IsAlive() && aParts.mHScrollbar) {
     nsAutoString curPos;
-    curPos.AppendInt(mHorzPosition);
+    curPos.AppendInt((int64_t)mHorzPosition);
     aParts.mHScrollbarContent->
       SetAttr(kNameSpaceID_None, nsGkAtoms::curpos, curPos, true);
     // 'this' might be deleted here
@@ -962,14 +962,14 @@ nsTreeBodyFrame::InvalidateScrollbars(const ScrollParts& aParts, nsWeakFrame& aW
 
     nscoord rowHeightAsPixels = nsPresContext::AppUnitsToIntCSSPixels(mRowHeight);
 
-    int32_t size = rowHeightAsPixels * (mRowCount > mPageLength ? mRowCount - mPageLength : 0);
+    int64_t size = (int64_t)rowHeightAsPixels * (mRowCount > mPageLength ? mRowCount - mPageLength : 0);
     maxposStr.AppendInt(size);
     aParts.mVScrollbarContent->
       SetAttr(kNameSpaceID_None, nsGkAtoms::maxpos, maxposStr, true);
     ENSURE_TRUE(weakFrame.IsAlive());
 
     // Also set our page increment and decrement.
-    nscoord pageincrement = mPageLength*rowHeightAsPixels;
+    int64_t pageincrement = (int64_t)mPageLength*rowHeightAsPixels;
     nsAutoString pageStr;
     pageStr.AppendInt(pageincrement);
     aParts.mVScrollbarContent->
@@ -982,7 +982,7 @@ nsTreeBodyFrame::InvalidateScrollbars(const ScrollParts& aParts, nsWeakFrame& aW
     nsRect bounds = aParts.mColumnsFrame->GetRect();
     nsAutoString maxposStr;
 
-    maxposStr.AppendInt(mHorzWidth > bounds.width ? mHorzWidth - bounds.width : 0);
+    maxposStr.AppendInt(int64_t(mHorzWidth > bounds.width ? mHorzWidth - bounds.width : 0));
     aParts.mHScrollbarContent->
       SetAttr(kNameSpaceID_None, nsGkAtoms::maxpos, maxposStr, true);
     ENSURE_TRUE(weakFrame.IsAlive());
@@ -4034,15 +4034,15 @@ nsresult nsTreeBodyFrame::EnsureRowIsVisibleInternal(const ScrollParts& aParts, 
   if (!mView || !mPageLength)
     return NS_OK;
 
-  if (mTopRowIndex <= aRow && mTopRowIndex+mPageLength > aRow)
+  if (mTopRowIndex <= aRow && (int64_t)mTopRowIndex+mPageLength > aRow)
     return NS_OK;
 
   if (aRow < mTopRowIndex)
     ScrollToRowInternal(aParts, aRow);
   else {
     // Bring it just on-screen.
-    int32_t distance = aRow - (mTopRowIndex+mPageLength)+1;
-    ScrollToRowInternal(aParts, mTopRowIndex+distance);
+    int64_t distance = aRow - ((int64_t)mTopRowIndex+mPageLength)+1;
+    ScrollToRowInternal(aParts, nsLayoutUtils::Int32FromInt64(mTopRowIndex+distance));
   }
 
   return NS_OK;
@@ -4147,20 +4147,13 @@ nsTreeBodyFrame::ScrollToRow(int32_t aRow)
   return NS_OK;
 }
 
-nsresult nsTreeBodyFrame::ScrollToRowInternal(const ScrollParts& aParts, int32_t aRow)
-{
-  ScrollInternal(aParts, aRow);
-
-  return NS_OK;
-}
-
 nsresult
 nsTreeBodyFrame::ScrollByLines(int32_t aNumLines)
 {
   if (!mView) {
     return NS_OK;
   }
-  int32_t newIndex = mTopRowIndex + aNumLines;
+  int64_t newIndex = (int64_t)mTopRowIndex + aNumLines;
   ScrollToRow(newIndex);
   return NS_OK;
 }
@@ -4183,7 +4176,7 @@ nsTreeBodyFrame::ScrollByPages(int32_t aNumPages)
 }
 
 nsresult
-nsTreeBodyFrame::ScrollInternal(const ScrollParts& aParts, int32_t aRow)
+nsTreeBodyFrame::ScrollToRowInternal(const ScrollParts& aParts, int32_t aRow)
 {
   if (!mView) {
     return NS_OK;
@@ -4291,8 +4284,8 @@ nsTreeBodyFrame::RepeatButtonScroll(nsScrollbarFrame* aScrollbar)
 
 void
 nsTreeBodyFrame::ThumbMoved(nsScrollbarFrame* aScrollbar,
-                            nscoord aOldPos,
-                            nscoord aNewPos)
+                            int64_t aOldPos,
+                            int64_t aNewPos)
 {
   ScrollParts parts = GetScrollParts();
   
@@ -4304,13 +4297,11 @@ nsTreeBodyFrame::ThumbMoved(nsScrollbarFrame* aScrollbar,
   // Vertical Scrollbar 
   if (parts.mVScrollbar == aScrollbar) {
     nscoord rh = nsPresContext::AppUnitsToIntCSSPixels(mRowHeight);
-    nscoord newIndex = nsPresContext::AppUnitsToIntCSSPixels(aNewPos);
-    nscoord newrow = newIndex/rh;
-    ScrollInternal(parts, newrow);
+    int64_t newrow = aNewPos / rh;
+    ScrollToRowInternal(parts, nsLayoutUtils::Int32FromInt64(newrow));
   // Horizontal Scrollbar
   } else if (parts.mHScrollbar == aScrollbar) {
-    int32_t newIndex = nsPresContext::AppUnitsToIntCSSPixels(aNewPos);
-    ScrollHorzInternal(parts, newIndex);
+    ScrollHorzInternal(parts, nsLayoutUtils::Int32FromInt64(aNewPos));
   }
   if (weakFrame.IsAlive()) {
     UpdateScrollbars(parts);

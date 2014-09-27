@@ -7130,6 +7130,15 @@ nsSetAttrRunnable::nsSetAttrRunnable(nsIContent* aContent, nsIAtom* aAttrName,
   mValue.AppendInt(aValue);
 }
 
+nsSetAttrRunnable::nsSetAttrRunnable(nsIContent* aContent, nsIAtom* aAttrName,
+  int64_t aValue)
+  : mContent(aContent),
+  mAttrName(aAttrName)
+{
+  NS_ASSERTION(aContent && aAttrName, "Missing stuff, prepare to crash");
+  mValue.AppendInt(aValue);
+}
+
 NS_IMETHODIMP
 nsSetAttrRunnable::Run()
 {

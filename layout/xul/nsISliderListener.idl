@@ -8,7 +8,7 @@
 /**
  * Used for <scale> to listen to slider changes to avoid mutation listeners
  */
-[scriptable, uuid(e5b3074e-ee18-4538-83b9-2487d90a2a34)]
+[scriptable, uuid(371ef704-1612-4957-a37f-3ec8170fdd95)]
 interface nsISliderListener : nsISupports
 {
   /**
@@ -17,7 +17,7 @@ interface nsISliderListener : nsISupports
    * If userChanged is true, then the user changed ths slider, otherwise it
    * was changed via some other means.
    */
-  void valueChanged(in AString which, in long newValue, in boolean userChanged);
+  void valueChanged(in AString which, in long long newValue, in boolean userChanged);
 
   /**
    * Called when the user begins or ends dragging the thumb.
