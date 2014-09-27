@@ -4135,10 +4135,9 @@ nsTreeBodyFrame::ScrollInternal(const ScrollParts& aParts, int32_t aRow)
   int32_t delta = aRow - mTopRowIndex;
 
   if (delta > 0) {
-    if (mTopRowIndex == (mRowCount - mPageLength + 1))
+    if (mTopRowIndex >= (mRowCount - mPageLength))
       return NS_OK;
-  }
-  else {
+  } else {
     if (mTopRowIndex == 0)
       return NS_OK;
   }
