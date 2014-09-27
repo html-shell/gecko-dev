@@ -4171,7 +4171,13 @@ nsTreeBodyFrame::ScrollByPages(int32_t aNumPages)
   if (!mView) {
     return NS_OK;
   }
-  int32_t newIndex = mTopRowIndex + aNumPages * mPageLength;
+  int64_t rowCount = (int64_t)aNumPages * mPageLength;
+  if (rowCount > 1) {
+    rowCount -= 1;
+  } else if (rowCount < -1) {
+    rowCount += 1;
+  }
+  int64_t newIndex = mTopRowIndex + rowCount;
   ScrollToRow(newIndex);
   return NS_OK;
 }
