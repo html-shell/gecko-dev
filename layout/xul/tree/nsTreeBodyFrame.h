@@ -140,8 +140,8 @@ public:
   virtual void ScrollByLine(nsScrollbarFrame* aScrollbar, int32_t aDirection) override;
   virtual void RepeatButtonScroll(nsScrollbarFrame* aScrollbar) override;
   virtual void ThumbMoved(nsScrollbarFrame* aScrollbar,
-                          nscoord aOldPos,
-                          nscoord aNewPos) override;
+                          int64_t aOldPos,
+                          int64_t aNewPos) override;
   virtual void VisibilityChanged(bool aVisible) override { Invalidate(); }
   virtual nsIFrame* GetScrollbarBox(bool aVertical) override {
     ScrollParts parts = GetScrollParts();
@@ -378,7 +378,6 @@ protected:
   void PrefillPropertyArray(int32_t aRowIndex, nsTreeColumn* aCol);
 
   // Our internal scroll method, used by all the public scroll methods.
-  nsresult ScrollInternal(const ScrollParts& aParts, int32_t aRow);
   nsresult ScrollToRowInternal(const ScrollParts& aParts, int32_t aRow);
   nsresult ScrollToColumnInternal(const ScrollParts& aParts, nsITreeColumn* aCol);
   nsresult ScrollHorzInternal(const ScrollParts& aParts, int32_t aPosition);

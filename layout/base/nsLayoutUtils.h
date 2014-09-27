@@ -2558,6 +2558,15 @@ public:
 
   static bool HasApzAwareListeners(mozilla::EventListenerManager* aElm);
   static bool HasDocumentLevelListenersForApzAwareEvents(nsIPresShell* aShell);
+  static int32_t Int32FromInt64(int64_t v) {
+    if (v < INT32_MIN) {
+      return INT32_MIN;
+    }
+    if (v > INT32_MAX) {
+      return INT32_MAX;
+    }
+    return (int32_t) v;
+  }
 
 private:
   static uint32_t sFontSizeInflationEmPerLine;
@@ -2693,6 +2702,8 @@ public:
                     const nsAString& aValue);
   nsSetAttrRunnable(nsIContent* aContent, nsIAtom* aAttrName,
                     int32_t aValue);
+  nsSetAttrRunnable(nsIContent* aContent, nsIAtom* aAttrName,
+                    int64_t aValue);
 
   NS_DECL_NSIRUNNABLE
 

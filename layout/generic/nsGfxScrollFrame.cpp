@@ -1174,13 +1174,14 @@ ScrollFrameHelper::RepeatButtonScroll(nsScrollbarFrame* aScrollbar)
 
 void
 ScrollFrameHelper::ThumbMoved(nsScrollbarFrame* aScrollbar,
-                              nscoord aOldPos,
-                              nscoord aNewPos)
+                              int64_t aOldPosition,
+                              int64_t aNewPosition)
 {
   MOZ_ASSERT(aScrollbar != nullptr);
   bool isHorizontal = aScrollbar->IsHorizontal();
   nsPoint current = GetScrollPosition();
   nsPoint dest = current;
+  nscoord aNewPos = nsPresContext::CSSPixelsToAppUnits(nsLayoutUtils::Int32FromInt64(aNewPosition));
   if (isHorizontal) {
     dest.x = IsLTR() ? aNewPos : aNewPos - GetScrollRange().width;
   } else {

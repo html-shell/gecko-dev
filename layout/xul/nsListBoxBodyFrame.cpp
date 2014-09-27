@@ -383,12 +383,13 @@ nsListBoxBodyFrame::ToRowIndex(nscoord aPos) const
 
 void
 nsListBoxBodyFrame::ThumbMoved(nsScrollbarFrame* aScrollbar,
-                               nscoord aOldPos,
-                               nscoord aNewPos)
+                               int64_t aOldPosition,
+                               int64_t aNewPosition)
 { 
   if (mScrolling || mRowHeight == 0)
     return;
 
+  nscoord aNewPos = nsPresContext::CSSPixelsToAppUnits(nsLayoutUtils::Int32FromInt64(aNewPosition));
   int32_t newIndex = ToRowIndex(aNewPos);
   if (newIndex == mCurrentIndex) {
     return;

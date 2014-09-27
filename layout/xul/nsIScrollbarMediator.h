@@ -40,15 +40,15 @@ public:
    */
   virtual void RepeatButtonScroll(nsScrollbarFrame* aScrollbar) = 0;
   /**
-   * aOldPos and aNewPos are scroll positions.
+   * aOldPos and aNewPos are scroll positions, their units are CSS pixel.
    * The scroll positions start with zero at the left edge; implementors that want
    * zero at the right edge for RTL content will need to adjust accordingly.
    * (See ScrollFrameHelper::ThumbMoved in nsGfxScrollFrame.cpp.)
    * @note This method might destroy the frame, pres shell, and other objects.
    */
   virtual void ThumbMoved(nsScrollbarFrame* aScrollbar,
-                          nscoord aOldPos,
-                          nscoord aNewPos) = 0;
+                          int64_t aOldPos,
+                          int64_t aNewPos) = 0;
   virtual void VisibilityChanged(bool aVisible) = 0;
 
   /**
