@@ -59,8 +59,8 @@ public:
   virtual void ScrollByLine(nsScrollbarFrame* aScrollbar, int32_t aDirection) override;
   virtual void RepeatButtonScroll(nsScrollbarFrame* aScrollbar) override;
   virtual void ThumbMoved(nsScrollbarFrame* aScrollbar,
-                          int32_t aOldPos,
-                          int32_t aNewPos) override;
+                          int64_t aOldPos,
+                          int64_t aNewPos) override;
   virtual void VisibilityChanged(bool aVisible) override;
   virtual nsIFrame* GetScrollbarBox(bool aVertical) override;
   virtual void ScrollbarActivityStarted() const override {}
