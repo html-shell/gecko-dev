@@ -4142,6 +4142,7 @@ nsTreeBodyFrame::ScrollInternal(const ScrollParts& aParts, int32_t aRow)
       return NS_OK;
   }
 
+  mMouseOverRow += delta;
   mTopRowIndex += delta;
 
   Invalidate();
