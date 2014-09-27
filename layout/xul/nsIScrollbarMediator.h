@@ -40,12 +40,12 @@ public:
    */
   virtual void RepeatButtonScroll(nsScrollbarFrame* aScrollbar) = 0;
   /**
-   * aOldPos and aNewPos are scroll positions.
+   * aOldPos and aNewPos are scroll positions, their units are CSS pixel.
    * @note This method might destroy the frame, pres shell, and other objects.
    */
   virtual void ThumbMoved(nsScrollbarFrame* aScrollbar,
-                          nscoord aOldPos,
-                          nscoord aNewPos) = 0;
+                          int64_t aOldPos,
+                          int64_t aNewPos) = 0;
   virtual void VisibilityChanged(bool aVisible) = 0;
 
   /**

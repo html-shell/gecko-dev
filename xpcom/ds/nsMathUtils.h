@@ -77,6 +77,18 @@ NS_lroundf(float aNum)
   return aNum >= 0.0f ? int32_t(aNum + 0.5f) : int32_t(aNum - 0.5f);
 }
 
+inline int64_t
+NS_llround(double aNum)
+{
+  return aNum >= 0.0 ? int64_t(aNum + 0.5) : int64_t(aNum - 0.5);
+}
+
+inline int64_t
+NS_llroundf(float aNum)
+{
+  return aNum >= 0.0 ? int64_t(aNum + 0.5) : int64_t(aNum - 0.5);
+}
+
 /*
  * hypot.  We don't need a super accurate version of this, if a platform
  * turns up with none of the possibilities below it would be okay to fall

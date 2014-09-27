@@ -332,8 +332,8 @@ public:
   void ScrollByLine(nsScrollbarFrame* aScrollbar, int32_t aDirection);
   void RepeatButtonScroll(nsScrollbarFrame* aScrollbar);
   void ThumbMoved(nsScrollbarFrame* aScrollbar,
-                  nscoord aOldPos,
-                  nscoord aNewPos);
+                  int64_t aOldPos,
+                  int64_t aNewPos);
   void ScrollByUnit(nsScrollbarFrame* aScrollbar,
                     nsIScrollableFrame::ScrollMode aMode,
                     int32_t aDirection,
@@ -742,8 +742,8 @@ public:
     mHelper.RepeatButtonScroll(aScrollbar);
   }
   virtual void ThumbMoved(nsScrollbarFrame* aScrollbar,
-                          nscoord aOldPos,
-                          nscoord aNewPos) MOZ_OVERRIDE {
+                          int64_t aOldPos,
+                          int64_t aNewPos) MOZ_OVERRIDE{
     mHelper.ThumbMoved(aScrollbar, aOldPos, aNewPos);
   }
   virtual void VisibilityChanged(bool aVisible) {}
@@ -1088,8 +1088,8 @@ public:
     mHelper.RepeatButtonScroll(aScrollbar);
   }
   virtual void ThumbMoved(nsScrollbarFrame* aScrollbar,
-                          nscoord aOldPos,
-                          nscoord aNewPos) MOZ_OVERRIDE {
+                          int64_t aOldPos,
+                          int64_t aNewPos) MOZ_OVERRIDE{
     mHelper.ThumbMoved(aScrollbar, aOldPos, aNewPos);
   }
   virtual void VisibilityChanged(bool aVisible) {}

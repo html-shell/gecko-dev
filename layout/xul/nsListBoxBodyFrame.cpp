@@ -365,12 +365,13 @@ nsListBoxBodyFrame::RepeatButtonScroll(nsScrollbarFrame* aScrollbar)
 
 void
 nsListBoxBodyFrame::ThumbMoved(nsScrollbarFrame* aScrollbar,
-                               nscoord aOldPos,
-                               nscoord aNewPos)
+                               int64_t aOldPosition,
+                               int64_t aNewPosition)
 { 
   if (mScrolling || mRowHeight == 0)
     return;
 
+  nscoord aNewPos = nsPresContext::CSSPixelsToAppUnits(nsLayoutUtils::Int32FromInt64(aNewPosition));
   nscoord oldTwipIndex;
   oldTwipIndex = mCurrentIndex*mRowHeight;
   int32_t twipDelta = aNewPos > oldTwipIndex ? aNewPos - oldTwipIndex : oldTwipIndex - aNewPos;
@@ -386,7 +387,6 @@ nsListBoxBodyFrame::ThumbMoved(nsScrollbarFrame* aScrollbar,
   // update the position to be row based.
 
   int32_t newIndex = aNewPos > oldTwipIndex ? mCurrentIndex + rowDelta : mCurrentIndex - rowDelta;
-  //aNewIndex = newIndex*mRowHeight/mOnePixel;
 
   nsListScrollSmoother* smoother = GetSmoother();
 

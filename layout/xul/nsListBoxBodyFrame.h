@@ -61,8 +61,8 @@ public:
   virtual void ScrollByLine(nsScrollbarFrame* aScrollbar, int32_t aDirection) MOZ_OVERRIDE;
   virtual void RepeatButtonScroll(nsScrollbarFrame* aScrollbar) MOZ_OVERRIDE;
   virtual void ThumbMoved(nsScrollbarFrame* aScrollbar,
-                          int32_t aOldPos,
-                          int32_t aNewPos) MOZ_OVERRIDE;
+                          int64_t aOldPos,
+                          int64_t aNewPos) MOZ_OVERRIDE;
   virtual void VisibilityChanged(bool aVisible) MOZ_OVERRIDE;
   virtual nsIFrame* GetScrollbarBox(bool aVertical) MOZ_OVERRIDE;
   virtual void ScrollbarActivityStarted() const MOZ_OVERRIDE {}
