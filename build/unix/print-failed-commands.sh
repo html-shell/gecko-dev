@@ -16,10 +16,10 @@
 # Since make already started a shell for us, we might as well use it rather
 # than starting a new one.
 
+echo "$@"
 ( exec "$@" ) || {
     echo
     echo "In the directory " `pwd`
     echo "The following command failed to execute properly:"
-    echo "$@"
     exit 1;
 }
