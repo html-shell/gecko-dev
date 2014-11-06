@@ -118,24 +118,25 @@ static PLHashAllocOps dataSourceHashAllocOps = {
 //
 
 struct ResourceHashEntry : public PLDHashEntryHdr {
-    const char *mKey;
+    nsCString mKey;
     nsIRDFResource *mResource;
 
     static PLDHashNumber
     HashKey(PLDHashTable *table, const void *key)
     {
-        return HashString(static_cast<const char *>(key));
+        const nsCString* strKey = static_cast<const nsCString*>(key);
+        return HashString(strKey->get());
     }
 
     static bool
     MatchEntry(PLDHashTable *table, const PLDHashEntryHdr *hdr,
                const void *key)
     {
+        const nsCString* strKey = static_cast<const nsCString*>(key);
         const ResourceHashEntry *entry =
             static_cast<const ResourceHashEntry *>(hdr);
 
-        return 0 == nsCRT::strcmp(static_cast<const char *>(key),
-                                  entry->mKey);
+        return *strKey == entry->mKey;
     }
 };
 
@@ -882,7 +883,7 @@ RDFServiceImpl::GetResource(const nsACString& aURI, nsIRDFResource** aResource)
     // First, check the cache to see if we've already created and
     // registered this thing.
     PLDHashEntryHdr *hdr =
-        PL_DHashTableOperate(&mResources, flatURI.get(), PL_DHASH_LOOKUP);
+        PL_DHashTableOperate(&mResources, &flatURI, PL_DHASH_LOOKUP);
 
     if (PL_DHASH_ENTRY_IS_BUSY(hdr)) {
         ResourceHashEntry *entry = static_cast<ResourceHashEntry *>(hdr);
@@ -1009,7 +1010,7 @@ static int32_t kShift = 6;
         // service. Now that it's a member we can be more cleverer.
 
         s.Truncate();
-        s.Append("rdf:#$");
+        s.AppendLiteral("rdf:#$");
 
         uint32_t id = ++gCounter;
         while (id) {
@@ -1166,17 +1167,17 @@ RDFServiceImpl::RegisterResource(nsIRDFResource* aResource, bool aReplace)
 
     nsresult rv;
 
-    const char* uri;
-    rv = aResource->GetValueConst(&uri);
+    nsCString uri;
+    rv = aResource->GetValueUTF8(uri);
     NS_ASSERTION(NS_SUCCEEDED(rv), "unable to get URI from resource");
     if (NS_FAILED(rv)) return rv;
 
-    NS_ASSERTION(uri != nullptr, "resource has no URI");
-    if (! uri)
+    NS_ASSERTION(uri.get() != nullptr, "resource has no URI");
+    if (! uri.get())
         return NS_ERROR_NULL_POINTER;
 
     PLDHashEntryHdr *hdr =
-        PL_DHashTableOperate(&mResources, uri, PL_DHASH_LOOKUP);
+        PL_DHashTableOperate(&mResources, &uri, PL_DHASH_LOOKUP);
 
     if (PL_DHASH_ENTRY_IS_BUSY(hdr)) {
         if (!aReplace) {
@@ -1191,16 +1192,16 @@ RDFServiceImpl::RegisterResource(nsIRDFResource* aResource, bool aReplace)
         PR_LOG(gLog, PR_LOG_DEBUG,
                ("rdfserv   replace-resource [%p] <-- [%p] %s",
                 static_cast<ResourceHashEntry *>(hdr)->mResource,
-                aResource, (const char*) uri));
+                aResource, (const char*) uri.get()));
     }
     else {
-        hdr = PL_DHashTableOperate(&mResources, uri, PL_DHASH_ADD);
+        hdr = PL_DHashTableOperate(&mResources, &uri, PL_DHASH_ADD);
         if (! hdr)
             return NS_ERROR_OUT_OF_MEMORY;
 
         PR_LOG(gLog, PR_LOG_DEBUG,
                ("rdfserv   register-resource [%p] %s",
-                aResource, (const char*) uri));
+                aResource, (const char*) uri.get()));
     }
 
     // N.B., we only hold a weak reference to the resource: that way,
@@ -1223,24 +1224,24 @@ RDFServiceImpl::UnregisterResource(nsIRDFResource* aResource)
 
     nsresult rv;
 
-    const char* uri;
-    rv = aResource->GetValueConst(&uri);
+    nsCString uri;
+    rv = aResource->GetValueUTF8(uri);
     if (NS_FAILED(rv)) return rv;
 
-    NS_ASSERTION(uri != nullptr, "resource has no URI");
-    if (! uri)
+    NS_ASSERTION(uri.get() != nullptr, "resource has no URI");
+    if (! uri.get())
         return NS_ERROR_UNEXPECTED;
 
     PR_LOG(gLog, PR_LOG_DEBUG,
            ("rdfserv unregister-resource [%p] %s",
-            aResource, (const char*) uri));
+            aResource, (const char*) uri.get()));
 
 #ifdef DEBUG
-    if (PL_DHASH_ENTRY_IS_FREE(PL_DHashTableOperate(&mResources, uri, PL_DHASH_LOOKUP)))
+    if (PL_DHASH_ENTRY_IS_FREE(PL_DHashTableOperate(&mResources, &uri, PL_DHASH_LOOKUP)))
         NS_WARNING("resource was never registered");
 #endif
 
-    PL_DHashTableOperate(&mResources, uri, PL_DHASH_REMOVE);
+    PL_DHashTableOperate(&mResources, &uri, PL_DHASH_REMOVE);
     return NS_OK;
 }
 
