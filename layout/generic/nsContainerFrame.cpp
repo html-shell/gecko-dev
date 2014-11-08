@@ -645,7 +645,7 @@ nsContainerFrame::SyncWindowProperties(nsPresContext*       aPresContext,
     return;
 
   nsIWidget* windowWidget = GetPresContextContainerWidget(aPresContext);
-  if (!windowWidget || !IsTopLevelWidget(windowWidget))
+  if (!windowWidget)
     return;
 
   nsViewManager* vm = aView->GetViewManager();
@@ -681,6 +681,9 @@ nsContainerFrame::SyncWindowProperties(nsPresContext*       aPresContext,
   nsTransparencyMode mode = nsLayoutUtils::GetFrameTransparency(aFrame, rootFrame);
   nsIWidget* viewWidget = aView->GetWidget();
   viewWidget->SetTransparencyMode(mode);
+  if (!IsTopLevelWidget(windowWidget)) {
+    return;
+  }
   windowWidget->SetWindowShadowStyle(rootFrame->StyleUIReset()->mWindowShadow);
 
   if (!aRC)
