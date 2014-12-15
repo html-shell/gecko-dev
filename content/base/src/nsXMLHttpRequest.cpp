@@ -2311,12 +2311,13 @@ GetRequestBody(nsIDOMDocument* aDoc, nsIInputStream** aResult,
                nsACString& aCharset)
 {
   aContentType.AssignLiteral("application/xml");
+  nsCOMPtr<nsIDocument> doc(do_QueryInterface(aDoc));
+  NS_ENSURE_STATE(doc);
   nsAutoString inputEncoding;
-  aDoc->GetInputEncoding(inputEncoding);
+  aDoc->GetCharacterSet(inputEncoding);
   if (!DOMStringIsNull(inputEncoding)) {
     CopyUTF16toUTF8(inputEncoding, aCharset);
-  }
-  else {
+  } else {
     aCharset.AssignLiteral("UTF-8");
   }
 
