@@ -79,6 +79,7 @@ class VisualStudioBackend(CommonBackend):
         self._version = '2010'
 
         self._paths_to_sources = {}
+        self._path_to_unified_sources = set();
         self._paths_to_includes = {}
         self._paths_to_defines = {}
         self._paths_to_configs = {}
@@ -138,7 +139,10 @@ class VisualStudioBackend(CommonBackend):
 
         s = self._paths_to_sources.setdefault(reldir, set())
         if obj.have_unified_mapping:
-            s.update(unified_file for unified_file, _ in obj.unified_source_mapping)
+            unified_files = [unified_file for unified_file, _ in obj.unified_source_mapping]
+            s.update(unified_files)
+            self._path_to_unified_sources.update(unified_files);
+            s.update(obj.files) # For unified sources, we need them both
         else:
             s.update(obj.files)
 
@@ -154,9 +158,11 @@ class VisualStudioBackend(CommonBackend):
 
         for lib, path in sorted(self._libs_to_paths.items()):
             config = self._paths_to_configs.get(path, None)
-            sources = self._paths_to_sources.get(path, set())
-            sources = set(os.path.join('$(TopSrcDir)', path, s) for s in sources)
-            sources = set(os.path.normpath(s) for s in sources)
+            exist_sources = self._paths_to_sources.get(path, set())
+            sources = set();
+            for s in exist_sources:
+                prefx_path = '$(TopObjDir)' if s in self._path_to_unified_sources else '$(TopSrcDir)'
+                sources.add(os.path.normpath(os.path.join(prefx_path, path, s)))
 
             finder = FileFinder(os.path.join(self.environment.topsrcdir, path),
                 find_executables=False)
@@ -190,7 +196,10 @@ class VisualStudioBackend(CommonBackend):
             includes = [os.path.normpath(i) for i in includes]
 
             defines = []
-            for k, v in self._paths_to_defines.get(path, {}).items():
+            all_defines = {}
+            all_defines.update(self._paths_to_defines.get(path, {}))
+            defines.extend(self.environment.defines) # Append global defines
+            for k, v in all_defines.items():
                 if v is True:
                     defines.append(k)
                 else:
@@ -536,6 +545,8 @@ class VisualStudioBackend(CommonBackend):
 
         if includes:
             n = pg.appendChild(doc.createElement('NMakeIncludeSearchPath'))
+            n.appendChild(doc.createTextNode(';'.join(includes)))
+            n = pg.appendChild(doc.createElement('IncludePath'))
             n.appendChild(doc.createTextNode(';'.join(includes)))
 
         if forced_includes:
