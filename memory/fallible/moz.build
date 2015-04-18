@@ -9,6 +9,8 @@ EXPORTS.mozilla += [
 ]
 
 Library('fallible')
+FORCE_STATIC_LIB = True
+SDK_LIBRARY = True
 
 SOURCES += [
     'fallible.cpp',
