@@ -34,6 +34,9 @@ public:
   static bool FindEncodingForLabel(const nsACString& aLabel,
                                    nsACString& aOutEncoding);
 
+  static NS_EXPORT bool FindEncodingForLabel(const char* aLabel,
+                                   char** aOutEncoding);
+
   static bool FindEncodingForLabel(const nsAString& aLabel,
                                    nsACString& aOutEncoding)
   {

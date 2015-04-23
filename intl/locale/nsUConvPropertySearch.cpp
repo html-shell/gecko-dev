@@ -4,7 +4,6 @@
 
 #include "nsUConvPropertySearch.h"
 #include "nsCRT.h"
-#include "nsString.h"
 #include "mozilla/BinarySearch.h"
 
 namespace {
@@ -41,4 +40,33 @@ nsUConvPropertySearch::SearchPropertyValue(const char* aProperties[][3],
 
   aValue.Truncate();
   return NS_ERROR_FAILURE;
+}
+
+// static
+nsresult
+nsUConvPropertySearch::SearchPropertyValue(const char* aProperties[][3],
+                                           int32_t aNumberOfProperties,
+                                           const char* aKey,
+                                           char** aValue)
+{
+  nsresult rv = NS_ERROR_NULL_POINTER;
+  if (aKey && aValue) {
+    rv = NS_OK;
+  }
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  nsAutoCString value;
+  rv = SearchPropertyValue(aProperties, aNumberOfProperties, nsCString(aKey), value);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  uint32_t length = value.Length();
+  *aValue = (char *)NS_Alloc(length + 1);
+  if (!(*aValue)) rv = NS_ERROR_OUT_OF_MEMORY;
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  if (length > 0)
+    memcpy(*aValue, value.get(), length);
+  (*aValue)[length] = '\0';
+
+  return NS_OK;
 }
