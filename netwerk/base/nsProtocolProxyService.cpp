@@ -1140,7 +1140,7 @@ private:
 NS_IMPL_ISUPPORTS0(nsAsyncBridgeRequest)
 
 // nsProtocolProxyService
-nsresult
+NS_IMETHODIMP
 nsProtocolProxyService::DeprecatedBlockingResolve(nsIChannel *aChannel,
                                                   uint32_t aFlags,
                                                   nsIProxyInfo **retval)

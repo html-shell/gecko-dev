@@ -9,7 +9,7 @@
 /**
  * An extension of nsIProtocolProxyService
  */
-[scriptable, uuid(b2e5b2c0-e21e-4845-b336-be6d60a38951)]
+[scriptable, uuid(fd592701-e0ad-45da-b7c4-9cd3af0e3956)]
 interface nsIProtocolProxyService2 : nsIProtocolProxyService
 {
   /**
@@ -27,4 +27,6 @@ interface nsIProtocolProxyService2 : nsIProtocolProxyService
      */
   nsICancelable asyncResolve2(in nsIChannel aChannel, in unsigned long aFlags,
                               in nsIProtocolProxyCallback aCallback);
+
+  nsIProxyInfo deprecatedBlockingResolve(in nsIChannel aChannel, in unsigned long aFlags);
 };
