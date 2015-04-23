@@ -6,7 +6,7 @@
 #define mozilla_dom_encodingutils_h_
 
 #include "nsDataHashtable.h"
-#include "nsString.h"
+#include "nsStringGlue.h"
 
 class nsIUnicodeDecoder;
 class nsIUnicodeEncoder;
