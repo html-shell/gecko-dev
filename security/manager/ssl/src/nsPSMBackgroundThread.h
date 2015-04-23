@@ -48,7 +48,7 @@ public:
   nsPSMBackgroundThread();
   virtual ~nsPSMBackgroundThread();
 
-  nsresult startThread(const nsCSubstring & name);
+  nsresult startThread(const nsACString & name);
   void requestExit();
 };
 

@@ -6,6 +6,7 @@
 #ifndef _NS_NSSCERTIFICATE_H_
 #define _NS_NSSCERTIFICATE_H_
 
+#include "nsStringGlue.h"
 #include "nsIX509Cert.h"
 #include "nsIX509CertDB.h"
 #include "nsIX509CertList.h"
@@ -20,7 +21,6 @@
 
 namespace mozilla { namespace pkix { class DERArray; } }
 
-class nsAutoString;
 class nsINSSComponent;
 class nsIASN1Sequence;
 
