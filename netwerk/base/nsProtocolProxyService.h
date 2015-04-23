@@ -6,7 +6,7 @@
 #ifndef nsProtocolProxyService_h__
 #define nsProtocolProxyService_h__
 
-#include "nsString.h"
+#include "nsStringGlue.h"
 #include "nsCOMPtr.h"
 #include "nsAutoPtr.h"
 #include "nsTArray.h"
@@ -47,9 +47,6 @@ public:
     nsProtocolProxyService();
 
     nsresult Init();
-    nsresult DeprecatedBlockingResolve(nsIChannel *aChannel,
-                                       uint32_t aFlags,
-                                       nsIProxyInfo **retval);
 
 protected:
     friend class nsAsyncResolveRequest;
