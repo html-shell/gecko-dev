@@ -46,6 +46,7 @@ class CryptoTask : public nsRunnable,
 {
 public:
   template <size_t LEN>
+  inline
   nsresult Dispatch(const char (&taskThreadName)[LEN])
   {
     static_assert(LEN <= 15,
@@ -53,7 +54,17 @@ public:
     return Dispatch(NS_LITERAL_CSTRING(taskThreadName));
   }
 
-  nsresult Dispatch(const nsACString& taskThreadName);
+  inline
+  nsresult Dispatch(const char* taskThreadName)
+  {
+    return Dispatch(nsCString(taskThreadName));
+  }
+
+  inline
+  nsresult Dispatch(const nsACString& taskThreadName)
+  {
+    return Dispatch(taskThreadName.BeginReading(), taskThreadName.Length());
+  }
 
   void Skip()
   {
@@ -61,6 +72,8 @@ public:
   }
 
 protected:
+  nsresult Dispatch(const char* taskThreadName, uint32_t length);
+
   CryptoTask()
     : mRv(NS_ERROR_NOT_INITIALIZED),
       mReleasedNSSResources(false)

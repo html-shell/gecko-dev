@@ -20,8 +20,9 @@ CryptoTask::~CryptoTask()
 }
 
 nsresult
-CryptoTask::Dispatch(const nsACString& taskThreadName)
+CryptoTask::Dispatch(const char* aTaskThreadName, uint32_t length)
 {
+  nsCString taskThreadName(aTaskThreadName, length);
   MOZ_ASSERT(taskThreadName.Length() <= 15);
 
   // Ensure that NSS is initialized, since presumably CalculateResult

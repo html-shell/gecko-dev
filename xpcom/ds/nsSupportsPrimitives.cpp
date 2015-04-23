@@ -105,7 +105,12 @@ nsSupportsCStringImpl::ToString(char** aResult)
 NS_IMETHODIMP
 nsSupportsCStringImpl::SetData(const nsACString& aData)
 {
+#ifdef MOZILLA_INTERNAL_API
   bool ok = mData.Assign(aData, mozilla::fallible);
+#else
+  bool ok = true;
+  mData = aData;
+#endif
   if (!ok) {
     return NS_ERROR_OUT_OF_MEMORY;
   }
@@ -150,7 +155,12 @@ nsSupportsStringImpl::ToString(char16_t** aResult)
 NS_IMETHODIMP
 nsSupportsStringImpl::SetData(const nsAString& aData)
 {
+#ifdef MOZILLA_INTERNAL_API
   bool ok = mData.Assign(aData, mozilla::fallible);
+#else
+  bool ok = true;
+  mData = aData;
+#endif
   if (!ok) {
     return NS_ERROR_OUT_OF_MEMORY;
   }

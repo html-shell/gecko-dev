@@ -40,6 +40,33 @@ EncodingUtils::FindEncodingForLabel(const nsACString& aLabel,
 }
 
 bool
+EncodingUtils::FindEncodingForLabel(const char* aLabel,
+                                    char** aOutEncoding)
+{
+  nsresult rv = NS_ERROR_NULL_POINTER;
+  if (aLabel && aOutEncoding) {
+    rv = NS_OK;
+  }
+  NS_ENSURE_SUCCESS(rv, false);
+
+  nsAutoCString value;
+  if (!FindEncodingForLabel(nsCString(aLabel), value)) {
+    return false;
+  }
+
+  uint32_t length = value.Length();
+  *aOutEncoding = (char *)NS_Alloc(length + 1);
+  if (!(*aOutEncoding)) rv = NS_ERROR_OUT_OF_MEMORY;
+  NS_ENSURE_SUCCESS(rv, false);
+
+  if (length > 0)
+    memcpy(*aOutEncoding, value.get(), length);
+  (*aOutEncoding)[length] = '\0';
+
+  return true;
+}
+
+bool
 EncodingUtils::FindEncodingForLabelNoReplacement(const nsACString& aLabel,
                                                  nsACString& aOutEncoding)
 {
