@@ -89,6 +89,7 @@ UNIFIED_SOURCES += [
 SOURCES += [
     'nsPersistentProperties.cpp',
     'nsStaticNameTable.cpp',
+    'nsStringEnumeratorExport.cpp',
 ]
 
 if CONFIG['OS_ARCH'] == 'WINNT':
