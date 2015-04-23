@@ -9,6 +9,8 @@
 
 #include <limits>
 
+#include "nsINSSErrorsService.h"
+#include "nsServiceManagerUtils.h"
 #include "NSSErrorsService.h"
 #include "mozilla/Likely.h"
 #ifndef MOZ_NO_MOZALLOC
@@ -59,11 +61,17 @@ uint8_t_ptr_cast(const char * p) { return reinterpret_cast<const uint8_t*>(p); }
 inline nsresult
 MapSECStatus(SECStatus rv)
 {
+  nsresult rt;
   if (rv == SECSuccess) {
     return NS_OK;
   }
+  nsresult result;
+  nsCOMPtr<nsINSSErrorsService> nssErrorService = do_GetService("@mozilla.org/nss_errors_service;1", &result);
+  NS_ENSURE_SUCCESS(result, result);
 
-  return mozilla::psm::GetXPCOMFromNSSError(PR_GetError());
+  result = nssErrorService->GetXPCOMFromNSSError(PR_GetError(), &rt);
+  NS_ENSURE_SUCCESS(result, result);
+  return rt;
 }
 
 #ifdef _MSC_VER
