@@ -22,7 +22,7 @@ nsPSMBackgroundThread::nsPSMBackgroundThread()
 {
 }
 
-nsresult nsPSMBackgroundThread::startThread(const nsCSubstring & name)
+nsresult nsPSMBackgroundThread::startThread(const nsACString & name)
 {
   mName = name;
 
