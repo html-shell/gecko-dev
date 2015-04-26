@@ -8990,10 +8990,10 @@ AC_SUBST(JS_SHARED_LIBRARY)
 dnl =========================================================
 dnl = LDAP
 dnl =========================================================
+MOZ_LDAP_XPCOM=1
 MOZ_ARG_DISABLE_BOOL(ldap,
 [  --disable-ldap          Disable LDAP support],
-    MOZ_LDAP_XPCOM=,
-    MOZ_LDAP_XPCOM=1)
+    MOZ_LDAP_XPCOM= )
 
 if test "$MOZ_LDAP_XPCOM"; then
     LDAP_CFLAGS='-I${DIST}/public/ldap'

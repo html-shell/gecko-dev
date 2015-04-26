@@ -321,6 +321,7 @@ CONFIG_STATUS_DEPS := \
   $(CONFIGURES) \
   $(TOPSRCDIR)/CLOBBER \
   $(TOPSRCDIR)/nsprpub/configure \
+  $(TOPSRCDIR)/ldap/c-sdk/configure \
   $(TOPSRCDIR)/config/milestone.txt \
   $(TOPSRCDIR)/browser/config/version.txt \
   $(TOPSRCDIR)/build/virtualenv_packages.txt \
