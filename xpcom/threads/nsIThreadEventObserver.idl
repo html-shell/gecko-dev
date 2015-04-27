@@ -1,0 +1,39 @@
+#include "nsIThread.idl"
+
+interface nsIRunnable;
+interface nsIThreadInternal;
+
+/**
+ * This interface provides the observer the events to be
+ * handled, for testing performance of event dispatch,
+ * and check which event are running slow.
+ */
+[scriptable, uuid(3e056ee9-bd08-4d63-bf51-bfe8f6259b1f)]
+interface nsIThreadEventObserver : nsISupports
+{
+  /**
+   * This method is called just before an event being dispatched.
+   *
+   * @param thread
+   *   The thread where the event is being dispatched.
+   * @param event
+   *   The event going to be dispatched.
+   * @param recursionDepth
+   *   Indicates the number of calls to ProcessNextEvent on the call stack in
+   *   addition to the current call.
+   */
+  void beforeEvent(in nsIThreadInternal thread, in nsIRunnable event, in unsigned long recursionDepth);
+
+  /**
+   * This method is called just after an event has been dispatched.
+   *
+   * @param thread
+   *   The thread where the event has been dispatched.
+   * @param event
+   *   The event has been dispatched.
+   * @param recursionDepth
+   *   Indicates the number of calls to ProcessNextEvent on the call stack in
+   *   addition to the current call.
+   */
+  void afterEvent(in nsIThreadInternal thread, in nsIRunnable event, in unsigned long recursionDepth);
+};
