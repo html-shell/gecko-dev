@@ -838,7 +838,10 @@ nsThread::ProcessNextEvent(bool aMayWait, bool* aResult)
       if (MAIN_THREAD == mIsMainThread) {
         HangMonitor::NotifyActivity();
       }
+      nsCOMPtr<nsIThreadEventObserver> eventObs = mEventObserver;
+      if (eventObs) eventObs->BeforeEvent(this, event, mRunningEvent);
       event->Run();
+      if (eventObs) eventObs->AfterEvent(this, event, mRunningEvent);
     } else if (aMayWait) {
       MOZ_ASSERT(ShuttingDown(),
                  "This should only happen when shutting down");
@@ -1127,4 +1130,23 @@ NS_IMETHODIMP
 nsThread::nsNestedEventTarget::IsOnCurrentThread(bool* aResult)
 {
   return mThread->IsOnCurrentThread(aResult);
+}
+
+NS_IMETHODIMP
+nsThread::GetEventObserver(nsIThreadEventObserver **obs)
+{
+  MutexAutoLock lock(mLock);
+  NS_IF_ADDREF(*obs = mEventObserver);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsThread::SetEventObserver(nsIThreadEventObserver *obs)
+{
+  if (NS_WARN_IF(PR_GetCurrentThread() != mThread))
+    return NS_ERROR_NOT_SAME_THREAD;
+
+  MutexAutoLock lock(mLock);
+  mEventObserver = obs;
+  return NS_OK;
 }

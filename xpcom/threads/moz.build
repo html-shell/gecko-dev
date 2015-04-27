@@ -12,6 +12,7 @@ XPIDL_SOURCES += [
     'nsIRunnable.idl',
     'nsISupportsPriority.idl',
     'nsIThread.idl',
+    'nsIThreadEventObserver.idl',
     'nsIThreadInternal.idl',
     'nsIThreadManager.idl',
     'nsIThreadPool.idl',
