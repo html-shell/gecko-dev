@@ -9,6 +9,7 @@
 
 #include "mozilla/Mutex.h"
 #include "nsIThreadInternal.h"
+#include "nsIThreadEventObserver.h"
 #include "nsISupportsPriority.h"
 #include "nsEventQueue.h"
 #include "nsThreadUtils.h"
@@ -173,6 +174,7 @@ protected:
   mozilla::Mutex mLock;
 
   nsCOMPtr<nsIThreadObserver> mObserver;
+  nsCOMPtr<nsIThreadEventObserver> mEventObserver;
 
   // Only accessed on the target thread.
   nsAutoTObserverArray<nsCOMPtr<nsIThreadObserver>, 2> mEventObservers;

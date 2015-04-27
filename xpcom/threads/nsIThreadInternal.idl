@@ -8,12 +8,13 @@
 
 interface nsIRunnable;
 interface nsIThreadObserver;
+interface nsIThreadEventObserver;
 
 /**
  * The XPCOM thread object implements this interface, which allows a consumer
  * to observe dispatch activity on the thread.
  */
-[scriptable, uuid(b24c5af3-43c2-4d17-be14-94d6648a305f)]
+[scriptable, uuid(9c69bd85-f4eb-4e29-bd3d-71f963df75bc)]
 interface nsIThreadInternal : nsIThread
 {
   /**
@@ -24,6 +25,16 @@ interface nsIThreadInternal : nsIThread
    * processed during a call to Shutdown.
    */
   attribute nsIThreadObserver observer;
+
+  /**
+   * Get/set the current thread event observer (may be null).  This attribute may be
+   * read from any thread, but must only be set on the thread corresponding to
+   * this thread object.  The observer will be released on the thread
+   * corresponding to this thread object after all other events have been
+   * processed during a call to Shutdown. This attribute is used to observe
+   * events that used 
+   */
+  attribute nsIThreadEventObserver eventObserver;
 
   /**
    * The current recursion depth, 0 when no events are running, 1 when a single
