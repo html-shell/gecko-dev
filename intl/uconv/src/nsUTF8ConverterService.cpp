@@ -65,7 +65,7 @@ nsUTF8ConverterService::ConvertStringToUTF8(const nsACString &aString,
   // check is requested. It may not be asked for if a caller suspects
   // that the input is in non-ASCII 7bit charset (ISO-2022-xx, HZ) or 
   // it's in a charset other than UTF-8 that can be mistaken for UTF-8.
-  if (!aSkipCheck && (IsASCII(aString) || IsUTF8(aString))) {
+  if (!aSkipCheck && IsASCII(aString)) {
     aUTF8String = aString;
     return NS_OK;
   }
