@@ -20,7 +20,11 @@ if CONFIG['OS_ARCH'] == 'WINNT':
 
 XPIDL_MODULE = 'xulapp'
 
-EXPORTS += ['nsAppRunner.h']
+EXPORTS += [
+    'nsAppRunner.h',
+    'nsNativeAppSupportWin.h',
+    'nsWindowsWMain.cpp',
+]
 
 if CONFIG['MOZ_INSTRUMENT_EVENT_LOOP']:
     EXPORTS += ['EventTracer.h']
