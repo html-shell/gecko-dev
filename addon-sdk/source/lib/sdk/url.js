@@ -23,7 +23,7 @@ var resProt = ios.getProtocolHandler("resource")
 var URLParser = Cc["@mozilla.org/network/url-parser;1?auth=no"]
                 .getService(Ci.nsIURLParser);
 
-const { Services } = Cu.import("resource://gre/modules/Services.jsm");
+const { Services } = Cu.import("resource://gre/modules/Services.jsm", {});
 
 function newURI(uriStr, base) {
   try {
