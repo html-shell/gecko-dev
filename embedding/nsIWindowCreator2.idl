@@ -58,5 +58,8 @@ interface nsIWindowCreator2 : nsIWindowCreator {
                                           in uint32_t contextFlags,
                                           in nsIURI uri,
                                           in nsITabParent aOpeningTab,
+                                          in string aName,
+                                          in string aFeatures,
+                                          in nsISupports aArguments,
                                           out boolean cancel);
 };

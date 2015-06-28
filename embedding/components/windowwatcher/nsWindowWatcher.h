@@ -85,7 +85,7 @@ protected:
                               bool aDialog,
                               bool aNavigate,
                               nsITabParent *aOpeningTab,
-                              nsIArray *argv,
+                              nsISupports *aArguments,
                               nsIDOMWindow **_retval);
 
   static nsresult   URIfromURL(const char *aURL,
