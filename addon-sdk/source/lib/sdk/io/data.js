@@ -15,7 +15,7 @@ const IOService = Cc["@mozilla.org/network/io-service;1"].
 
 const { deprecateFunction } = require('../util/deprecate');
 const { NetUtil } = Cu.import("resource://gre/modules/NetUtil.jsm");
-const { Services } = Cu.import("resource://gre/modules/Services.jsm");
+const { Services } = Cu.import("resource://gre/modules/Services.jsm", {});
 const FaviconService = Cc["@mozilla.org/browser/favicon-service;1"].
                           getService(Ci.nsIFaviconService);
 

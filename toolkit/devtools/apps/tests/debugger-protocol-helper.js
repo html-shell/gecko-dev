@@ -12,7 +12,7 @@ const {require} = devtools;
 
 
 const { FileUtils } = Cu.import("resource://gre/modules/FileUtils.jsm");
-const { Services } = Cu.import("resource://gre/modules/Services.jsm");
+const { Services } = Cu.import("resource://gre/modules/Services.jsm", {});
 
 let gClient, gActor;
 
