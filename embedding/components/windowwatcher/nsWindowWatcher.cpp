@@ -334,17 +334,9 @@ nsWindowWatcher::OpenWindow(nsIDOMWindow *aParent,
                             nsISupports *aArguments,
                             nsIDOMWindow **_retval)
 {
-  nsCOMPtr<nsIArray> argv = ConvertArgsToArray(aArguments);
-
-  uint32_t argc = 0;
-  if (argv) {
-    argv->GetLength(&argc);
-  }
-  bool dialog = (argc != 0);
-
   return OpenWindowInternal(aParent, aUrl, aName, aFeatures,
-                            /* calledFromJS = */ false, dialog,
-                            /* navigate = */ true, nullptr, argv, _retval);
+                            /* calledFromJS = */ false, false,
+                            /* navigate = */ true, nullptr, aArguments, _retval);
 }
 
 struct SizeSpec {
@@ -400,24 +392,11 @@ nsWindowWatcher::OpenWindow2(nsIDOMWindow *aParent,
                               nsISupports *aArguments,
                               nsIDOMWindow **_retval)
 {
-  nsCOMPtr<nsIArray> argv = ConvertArgsToArray(aArguments);
 
-  uint32_t argc = 0;
-  if (argv) {
-    argv->GetLength(&argc);
-  }
-
-  // This is extremely messed up, but this behavior is necessary because
-  // callers lie about whether they're a dialog window and whether they're
-  // called from script.  Fixing this is bug 779939.
-  bool dialog = aDialog;
-  if (!aCalledFromScript) {
-    dialog = argc > 0;
-  }
 
   return OpenWindowInternal(aParent, aUrl, aName, aFeatures,
-                            aCalledFromScript, dialog,
-                            aNavigate, aOpeningTab, argv, _retval);
+                            aCalledFromScript, aDialog,
+                            aNavigate, aOpeningTab, aArguments, _retval);
 }
 
 nsresult
@@ -429,7 +408,7 @@ nsWindowWatcher::OpenWindowInternal(nsIDOMWindow *aParent,
                                     bool aDialog,
                                     bool aNavigate,
                                     nsITabParent *aOpeningTab,
-                                    nsIArray *argv,
+                                    nsISupports *aArguments,
                                     nsIDOMWindow **_retval)
 {
   nsresult                        rv = NS_OK;
@@ -450,6 +429,20 @@ nsWindowWatcher::OpenWindowInternal(nsIDOMWindow *aParent,
   nsCOMPtr<nsIURI>                uriToLoad;        // from aUrl, if any
   nsCOMPtr<nsIDocShellTreeOwner>  parentTreeOwner;  // from the parent window, if any
   nsCOMPtr<nsIDocShellTreeItem>   newDocShellItem;  // from the new window
+
+  nsCOMPtr<nsIArray> argv = ConvertArgsToArray(aArguments);
+
+  uint32_t argc = 0;
+  if (argv) {
+    argv->GetLength(&argc);
+  }
+
+  // This is extremely messed up, but this behavior is necessary because
+  // callers lie about whether they're a dialog window and whether they're
+  // called from script.  Fixing this is bug 779939.
+  if (!aCalledFromJS) {
+    aDialog = argc > 0;
+  }
 
   nsCOMPtr<nsPIDOMWindow> parent = do_QueryInterface(aParent);
   if (parent && parent->IsInnerWindow()) {
@@ -728,7 +721,11 @@ nsWindowWatcher::OpenWindowInternal(nsIDOMWindow *aParent,
         bool cancel = false;
         rv = windowCreator2->CreateChromeWindow2(parentChrome, chromeFlags,
                                                  contextFlags, uriToLoad,
-                                                 aOpeningTab, &cancel,
+                                                 aOpeningTab,
+                                                 aName,
+                                                 aFeatures,
+                                                 aArguments,
+                                                 &cancel,
                                                  getter_AddRefs(newChrome));
         if (NS_SUCCEEDED(rv) && cancel) {
           newChrome = 0; // just in case
