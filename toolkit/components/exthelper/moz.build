@@ -8,5 +8,13 @@ XPIDL_SOURCES += [
     'extIApplication.idl',
 ]
 
+EXPORTS += [
+    'extApplication.js',
+]
+
+EXTRA_JS_MODULES += [
+    'extApplication.js',
+]
+
 XPIDL_MODULE = 'exthelper'
 
