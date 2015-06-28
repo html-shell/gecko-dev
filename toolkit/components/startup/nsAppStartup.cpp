@@ -622,7 +622,10 @@ nsAppStartup::CreateChromeWindow(nsIWebBrowserChrome *aParent,
                                  nsIWebBrowserChrome **_retval)
 {
   bool cancel;
-  return CreateChromeWindow2(aParent, aChromeFlags, 0, 0, nullptr, &cancel, _retval);
+  nsCOMPtr<nsIDocShellTreeItem> newDocShellItem;
+  return CreateChromeWindow2(aParent, aChromeFlags, 0, 0, nullptr,
+      nullptr, nullptr, nullptr,
+      &cancel, _retval);
 }
 
 
@@ -636,6 +639,9 @@ nsAppStartup::CreateChromeWindow2(nsIWebBrowserChrome *aParent,
                                   uint32_t aContextFlags,
                                   nsIURI *aURI,
                                   nsITabParent *aOpeningTab,
+                                  const char *aName,
+                                  const char *aFeatures,
+                                  nsISupports *aArguments,
                                   bool *aCancel,
                                   nsIWebBrowserChrome **_retval)
 {
