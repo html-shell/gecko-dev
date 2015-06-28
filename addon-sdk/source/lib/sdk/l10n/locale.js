@@ -9,7 +9,7 @@ module.metadata = {
 
 const prefs = require("../preferences/service");
 const { Cu, Cc, Ci } = require("chrome");
-const { Services } = Cu.import("resource://gre/modules/Services.jsm");
+const { Services } = Cu.import("resource://gre/modules/Services.jsm", {});
 
 /**
  * Gets the currently selected locale for display.

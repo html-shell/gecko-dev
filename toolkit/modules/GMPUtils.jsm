@@ -67,6 +67,8 @@ this.GMPUtils = {
   },
 };
 
+const KEY_LOG_BASE = "media.gmp.log.";
+
 /**
  * Manages preferences for GMP addons
  */
@@ -88,9 +90,9 @@ this.GMPPrefs = {
   KEY_BUILDID:                  "media.gmp-manager.buildID",
   KEY_CERTS_BRANCH:             "media.gmp-manager.certs.",
   KEY_PROVIDER_ENABLED:         "media.gmp-provider.enabled",
-  KEY_LOG_BASE:                 "media.gmp.log.",
-  KEY_LOGGING_LEVEL:            this.KEY_LOG_BASE + "level",
-  KEY_LOGGING_DUMP:             this.KEY_LOG_BASE + "dump",
+  KEY_LOG_BASE:                 KEY_LOG_BASE,
+  KEY_LOGGING_LEVEL:            KEY_LOG_BASE + "level",
+  KEY_LOGGING_DUMP:             KEY_LOG_BASE + "dump",
 
   /**
    * Obtains the specified preference in relation to the specified plugin.
