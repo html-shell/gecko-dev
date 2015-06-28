@@ -6,6 +6,7 @@
 
 EXPORTS += [
     'CryptoTask.h',
+    'nsCertVerificationThread.h',
     'nsClientAuthRemember.h',
     'nsCrypto.h',
     'nsNSSCallbacks.h',
@@ -13,8 +14,10 @@ EXPORTS += [
     'nsNSSComponent.h',
     'nsNSSHelper.h',
     'nsNSSShutDown.h',
+    'nsPSMBackgroundThread.h',
     'nsRandomGenerator.h',
     'NSSErrorsService.h',
+    'nsVerificationJob.h',
     'ScopedNSSTypes.h',
     'SharedCertVerifier.h',
 ]
