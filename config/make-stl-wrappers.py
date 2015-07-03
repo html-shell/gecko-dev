@@ -17,7 +17,7 @@ def header_path(header, compiler):
         # we use include_next on gcc
         return header
     elif compiler == 'msvc':
-        return find_in_path(header, os.environ.get('INCLUDE', ''))
+        return "..\\..\\VC\\INCLUDE\\" + header
     else:
         # hope someone notices this ...
         raise NotImplementedError(compiler)
