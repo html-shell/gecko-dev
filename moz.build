@@ -68,7 +68,10 @@ if CONFIG['COMPILE_ENVIRONMENT'] and not CONFIG['LIBXUL_SDK']:
         DIRS += ['config/external/ffi']
     if CONFIG['USE_ICU']:
         DIRS += ['config/external/icu']
-    DIRS += ['js/src']
+    if CONFIG['MOZ_BOLT_JS']:
+      DIRS += ['js']
+    else:
+      DIRS += ['js/src']
 
 if not CONFIG['JS_STANDALONE'] and CONFIG['MOZ_BUILD_APP']:
     # Bring in the configuration for the configured application.
