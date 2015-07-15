@@ -232,7 +232,7 @@ function setupPanelFrame(frame) {
   }
 }
 
-function make(document) {
+function make(document, enableChrome=false) {
   document = document || getMostRecentBrowserWindow().document;
   let panel = document.createElementNS(XUL_NS, "panel");
   panel.setAttribute("type", "arrow");
@@ -251,14 +251,18 @@ function make(document) {
     // Need to override `nodeName` to use `iframe` as `browsers` save session
     // history and in consequence do not dispatch "inner-window-destroyed"
     // notifications.
-    browser: false,
+    type: enableChrome ? 'chrome' : null,
+    browser: enableChrome,
     // Note that use of this URL let's use swap frame loaders earlier
     // than if we used default "about:blank".
     uri: "data:text/plain;charset=utf-8,"
   };
 
-  let backgroundFrame = createFrame(addonWindow, frameOptions);
-  setupPanelFrame(backgroundFrame);
+  let backgroundFrame = null;
+  if (!enableChrome) {
+    backgroundFrame = createFrame(addonWindow, frameOptions);
+    setupPanelFrame(backgroundFrame);
+  }
 
   let viewFrame = createFrame(panel, frameOptions);
   setupPanelFrame(viewFrame);
@@ -269,7 +273,7 @@ function make(document) {
     // See Bug 886329
     if (target !== this) return;
 
-    try { swapFrameLoaders(backgroundFrame, viewFrame); }
+    try { !enableChrome && swapFrameLoaders(backgroundFrame, viewFrame); }
     catch(error) { console.exception(error); }
     events.emit(type, { subject: panel });
   }
@@ -305,15 +309,14 @@ function make(document) {
   // on both to avoid setting and removing listeners on panel state changes.
 
   panel.addEventListener("DOMContentLoaded", onContentReady, true);
-  backgroundFrame.addEventListener("DOMContentLoaded", onContentReady, true);
-
   panel.addEventListener("load", onContentLoad, true);
-  backgroundFrame.addEventListener("load", onContentLoad, true);
-
   events.on("document-element-inserted", onContentChange);
 
-
-  panel.backgroundFrame = backgroundFrame;
+  if (backgroundFrame) {
+    backgroundFrame.addEventListener("DOMContentLoaded", onContentReady, true);
+    backgroundFrame.addEventListener("load", onContentLoad, true);
+    panel.backgroundFrame = backgroundFrame;
+  }
 
   // Store event listener on the panel instance so that it won't be GC-ed
   // while panel is alive.
@@ -339,8 +342,10 @@ function detach(panel) {
 exports.detach = detach;
 
 function dispose(panel) {
-  panel.backgroundFrame.parentNode.removeChild(panel.backgroundFrame);
-  panel.backgroundFrame = null;
+  if (panel.backgroundFrame) {
+    panel.backgroundFrame.parentNode.removeChild(panel.backgroundFrame);
+    panel.backgroundFrame = null;
+  }
   events.off("document-element-inserted", panel.onContentChange);
   panel.onContentChange = null;
   detach(panel);
@@ -395,7 +400,7 @@ function style(panel) {
 exports.style = style;
 
 let getContentFrame = panel =>
-    (isOpen(panel) || isOpening(panel)) ?
+    (isOpen(panel) || isOpening(panel) || !panel.backgroundFrame) ?
     panel.firstChild :
     panel.backgroundFrame
 exports.getContentFrame = getContentFrame;
