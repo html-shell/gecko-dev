@@ -1249,7 +1249,7 @@ nsHttpChannel::ProcessSSLInformation()
                 nsString consoleErrorTag = NS_LITERAL_STRING("SHA1Sig");
                 nsString consoleErrorMessage
                         = NS_LITERAL_STRING("SHA-1 Signature");
-                AddSecurityMessage(consoleErrorTag, consoleErrorMessage);
+                //AddSecurityMessage(consoleErrorTag, consoleErrorMessage);
             }
         }
     }
