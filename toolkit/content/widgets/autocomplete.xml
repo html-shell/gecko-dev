@@ -1580,7 +1580,7 @@ extends="chrome://global/content/bindings/popup.xml#popup">
           let displayUrl = url;
 
           let input = this.parentNode.parentNode.input;
-          if (typeof input.trimValue == "function")
+          if (input && typeof input.trimValue == "function")
             displayUrl = input.trimValue(url);
 
           let emphasiseTitle = true;
