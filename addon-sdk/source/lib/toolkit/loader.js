@@ -866,7 +866,8 @@ let isJSMURI = uri => uri.substr(-4) === '.jsm';
 let isJSURI = uri => uri.substr(-3) === '.js';
 let isAbsoluteURI = uri => uri.indexOf("resource://") >= 0 ||
                            uri.indexOf("chrome://") >= 0 ||
-                           uri.indexOf("file://") >= 0
+                           uri.indexOf("file://") >= 0 ||
+                           uri.indexOf("app://") >= 0
 let isRelative = id => id[0] === '.'
 
 const generateMap = iced(function generateMap(options, callback) {
