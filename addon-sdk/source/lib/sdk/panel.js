@@ -149,7 +149,7 @@ const Panel = Class({
     }
 
     // Setup view
-    let view = domPanel.make(options.document, options.enableChrome);
+    let view = domPanel.make(options.document, options.enableChrome, options.autoHide);
     panels.set(view, this);
     views.set(this, view);
 

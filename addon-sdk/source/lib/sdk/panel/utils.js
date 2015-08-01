@@ -235,10 +235,11 @@ function setupPanelFrame(frame) {
   }
 }
 
-function make(document, enableChrome=false) {
+function make(document, enableChrome=false, autoHide=true) {
   document = document || getMostRecentBrowserWindow().document;
   let panel = document.createElementNS(XUL_NS, "panel");
   panel.setAttribute("type", "arrow");
+  panel.setAttribute("noautohide", autoHide ? "false" : "true");
 
   // Note that panel is a parent of `viewFrame` who's `docShell` will be
   // configured at creation time. If `panel` and there for `viewFrame` won't
