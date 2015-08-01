@@ -215,6 +215,9 @@ function show(panel, options, anchor) {
   panel.setAttribute("noautofocus", !options.focus);
 
   let window = anchor && getOwnerBrowserWindow(anchor);
+  if (!window && options.document) {
+    window = options.document.ownerGlobal;
+  }
   let { document } = window ? window : getMostRecentBrowserWindow();
   attach(panel, document);
 

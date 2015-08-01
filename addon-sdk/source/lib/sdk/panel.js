@@ -134,6 +134,7 @@ const Panel = Class({
       defaultWidth: 320,
       defaultHeight: 240,
       focus: true,
+      document: options.document,
       position: Object.freeze({}),
       contextMenu: false
     }, panelContract(options));
@@ -148,7 +149,7 @@ const Panel = Class({
     }
 
     // Setup view
-    let view = domPanel.make(null, options.enableChrome);
+    let view = domPanel.make(options.document, options.enableChrome);
     panels.set(view, this);
     views.set(this, view);
 
@@ -235,6 +236,7 @@ const Panel = Class({
     let anchorView = getNodeView(anchor || options.position || model.position);
 
     options = merge({
+      document: model.document,
       position: model.position,
       width: model.width,
       height: model.height,
