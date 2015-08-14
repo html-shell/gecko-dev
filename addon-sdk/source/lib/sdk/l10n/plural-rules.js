@@ -395,7 +395,6 @@ const RULES = {
 exports.getRulesForLocale = function getRulesForLocale(locale) {
   let index = LOCALES_TO_RULES[locale];
   if (!(index in RULES)) {
-    console.warn('Plural form unknown for locale "' + locale + '"');
     return function () { return "other"; };
   }
   return RULES[index];
