@@ -869,7 +869,7 @@ nsresult nsURILoader::OpenChannel(nsIChannel* channel,
   nsCOMPtr<nsIURIContentListener> winContextListener(do_GetInterface(aWindowContext));
   if (winContextListener) {
     nsCOMPtr<nsIURI> uri;
-    channel->GetURI(getter_AddRefs(uri));
+    channel->GetOriginalURI(getter_AddRefs(uri));
     if (uri) {
       bool doAbort = false;
       winContextListener->OnStartURIOpen(uri, &doAbort);
