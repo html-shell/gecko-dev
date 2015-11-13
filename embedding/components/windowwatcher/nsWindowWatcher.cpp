@@ -691,7 +691,7 @@ nsWindowWatcher::OpenWindowInternal(nsIDOMWindow *aParent,
                  "attempted to open a new window with no WindowCreator");
     rv = NS_ERROR_FAILURE;
     if (mWindowCreator) {
-      nsCOMPtr<nsIWebBrowserChrome> newChrome;
+      nsCOMPtr<nsIWebBrowserChrome> newChrome = nullptr;
 
       /* If the window creator is an nsIWindowCreator2, we can give it
          some hints. The only hint at this time is whether the opening window
@@ -719,6 +719,7 @@ nsWindowWatcher::OpenWindowInternal(nsIDOMWindow *aParent,
           contextFlags |= nsIWindowCreator2::PARENT_IS_LOADING_OR_RUNNING_TIMEOUT;
 
         bool cancel = false;
+        nsCOMPtr<nsISupports> newChrome2;
         rv = windowCreator2->CreateChromeWindow2(parentChrome, chromeFlags,
                                                  contextFlags, uriToLoad,
                                                  aOpeningTab,
@@ -726,10 +727,16 @@ nsWindowWatcher::OpenWindowInternal(nsIDOMWindow *aParent,
                                                  aFeatures,
                                                  aArguments,
                                                  &cancel,
-                                                 getter_AddRefs(newChrome));
+                                                 getter_AddRefs(newChrome2));
         if (NS_SUCCEEDED(rv) && cancel) {
-          newChrome = 0; // just in case
+          newChrome = nullptr; // just in case
           rv = NS_ERROR_ABORT;
+        } else if (newChrome2) {
+          CallQueryInterface(newChrome2, _retval);
+          if (*_retval) {
+            return NS_OK;
+          }
+          newChrome = do_QueryInterface(newChrome2);
         }
       }
       else
