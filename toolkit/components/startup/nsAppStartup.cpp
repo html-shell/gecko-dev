@@ -623,9 +623,12 @@ nsAppStartup::CreateChromeWindow(nsIWebBrowserChrome *aParent,
 {
   bool cancel;
   nsCOMPtr<nsIDocShellTreeItem> newDocShellItem;
-  return CreateChromeWindow2(aParent, aChromeFlags, 0, 0, nullptr,
+  nsCOMPtr<nsISupports> newChrome;
+  nsresult rv = CreateChromeWindow2(aParent, aChromeFlags, 0, 0, nullptr,
       nullptr, nullptr, nullptr,
-      &cancel, _retval);
+      &cancel, getter_AddRefs(newChrome));
+  CallQueryInterface(newChrome, _retval);
+  return rv;
 }
 
 
@@ -643,7 +646,7 @@ nsAppStartup::CreateChromeWindow2(nsIWebBrowserChrome *aParent,
                                   const char *aFeatures,
                                   nsISupports *aArguments,
                                   bool *aCancel,
-                                  nsIWebBrowserChrome **_retval)
+                                  nsISupports **_retval)
 {
   NS_ENSURE_ARG_POINTER(aCancel);
   NS_ENSURE_ARG_POINTER(_retval);
@@ -686,8 +689,11 @@ nsAppStartup::CreateChromeWindow2(nsIWebBrowserChrome *aParent,
   if (newWindow) {
     newWindow->SetContextFlags(aContextFlags);
     nsCOMPtr<nsIInterfaceRequestor> thing(do_QueryInterface(newWindow));
-    if (thing)
-      CallGetInterface(thing.get(), _retval);
+    if (thing) {
+      nsCOMPtr<nsIWebBrowserChrome> chromeWindow;
+      chromeWindow = do_GetInterface(thing);
+      CallQueryInterface(chromeWindow, _retval);
+    }
   }
 
   return *_retval ? NS_OK : NS_ERROR_FAILURE;

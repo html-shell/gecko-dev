@@ -52,8 +52,10 @@ interface nsIWindowCreator2 : nsIWindowCreator {
                     be created at all. The caller should not default
                     to any possible backup scheme for creating the window.
       @return the new window. Will be null if canceled or an error occurred.
+        If it's nsIDOMWindow, that's means the open are already finished,
+        otherwise it's should be nsIWebBrowserChrome 
   */
-  nsIWebBrowserChrome createChromeWindow2(in nsIWebBrowserChrome parent,
+  nsISupports createChromeWindow2(in nsIWebBrowserChrome parent,
                                           in uint32_t chromeFlags,
                                           in uint32_t contextFlags,
                                           in nsIURI uri,
