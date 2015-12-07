@@ -24,7 +24,6 @@ EXPORTS.pkix += [
     'include/pkix/pkixtypes.h',
     'include/pkix/Result.h',
     'include/pkix/ScopedPtr.h',
-    'include/pkix/stdkeywords.h',
     'include/pkix/Time.h',
 ]
 
