@@ -405,11 +405,9 @@ nsXBLService::IsChromeOrResourceURI(nsIURI* aURI)
 {
   bool isChrome = false;
   bool isResource = false;
-  bool isApp = false;
   if (NS_SUCCEEDED(aURI->SchemeIs("chrome", &isChrome)) &&
-      NS_SUCCEEDED(aURI->SchemeIs("resource", &isResource)) &&
-      NS_SUCCEEDED(aURI->SchemeIs("app", &isApp)))
-      return (isChrome || isResource || isApp);
+      NS_SUCCEEDED(aURI->SchemeIs("resource", &isResource)))
+      return (isChrome || isResource);
   return false;
 }
 

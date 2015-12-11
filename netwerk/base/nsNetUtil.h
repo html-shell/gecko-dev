@@ -2241,18 +2241,9 @@ NS_SecurityCompareURIs(nsIURI* aSourceURI,
 
     // Compare schemes
     nsAutoCString targetScheme;
-    nsAutoCString sourceScheme;
-    if (NS_FAILED( targetBaseURI->GetScheme(targetScheme) ) ||
-      NS_FAILED( sourceBaseURI->GetScheme(sourceScheme) )) {
-        return false;
-    }
-
-    if (targetScheme.EqualsLiteral("app") || sourceScheme.EqualsLiteral("app")) {
-        return true;
-    }
-
     bool sameScheme = false;
-    if (NS_FAILED( sourceBaseURI->SchemeIs(targetScheme.get(), &sameScheme) ) ||
+    if (NS_FAILED( targetBaseURI->GetScheme(targetScheme) ) ||
+        NS_FAILED( sourceBaseURI->SchemeIs(targetScheme.get(), &sameScheme) ) ||
         !sameScheme)
     {
         // Not same-origin if schemes differ
