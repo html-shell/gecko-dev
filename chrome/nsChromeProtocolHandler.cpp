@@ -137,7 +137,19 @@ nsChromeProtocolHandler::NewChannel2(nsIURI* aURI,
     }
 
     nsCOMPtr<nsIURI> resolvedURI;
-    rv = nsChromeRegistry::gChromeRegistry->ConvertChromeURL(aURI, getter_AddRefs(resolvedURI));
+    nsAutoCString shellSpec;
+    aURI->GetSpec(shellSpec);
+    const char chromeShellPrefix[] = "chrome://shell/content/redirect/";
+    const int32_t chromeShellPrefixLength = sizeof(chromeShellPrefix) - 1;
+    const char shellPrefix[] = "shell://";
+    const int32_t shellPrefixLength = sizeof(shellPrefix) - 1;
+    if (shellSpec.Find(chromeShellPrefix, false, 0, chromeShellPrefixLength) == 0) {
+      shellSpec.Replace(0, chromeShellPrefixLength, shellPrefix, shellPrefixLength);
+      rv = NS_NewURI(getter_AddRefs(resolvedURI), shellSpec);
+    } else {
+      rv = nsChromeRegistry::gChromeRegistry->ConvertChromeURL(aURI, getter_AddRefs(resolvedURI));
+    }
+
     if (NS_FAILED(rv)) {
 #ifdef DEBUG
         nsAutoCString spec;
