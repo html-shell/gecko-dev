@@ -1485,7 +1485,12 @@ ScopedXPCOMStartup::SetWindowCreator(nsINativeAppSupport* native)
     (do_GetService(NS_WINDOWWATCHER_CONTRACTID, &rv));
   NS_ENSURE_SUCCESS(rv, rv);
 
-  return wwatch->SetWindowCreator(creator);
+  bool hasWindowCreator = false;
+  wwatch->HasWindowCreator(&hasWindowCreator);
+  if (!hasWindowCreator) {
+    rv = wwatch->SetWindowCreator(creator);
+  }
+  return rv;
 }
 
 /* static */ nsresult
