@@ -4592,7 +4592,22 @@ XRE_InitCommandLine(int aArgc, char* aArgv[])
 #endif
 
   const char *path = nullptr;
-  ArgResult ar = CheckArg("greomni", false, &path);
+  ArgResult ar = CheckArg("appcode", false, &path);
+  if (ar == ARG_BAD) {
+    PR_fprintf(PR_STDERR, "Error: argument --appcode requires a path argument\n");
+    return NS_ERROR_FAILURE;
+  }
+  nsCOMPtr<nsIFile> appCodePath;
+  if (path) {
+    rv = XRE_GetFileFromPath(path, getter_AddRefs(appCodePath));
+    if (NS_FAILED(rv)) {
+      PR_fprintf(PR_STDERR, "Error: argument --appcode requires a valid path\n");
+      return rv;
+    }
+    SaveFileToEnv("XRE_APPCODE_PATH", appCodePath);
+  }
+
+  ar = CheckArg("greomni", false, &path);
   if (ar == ARG_BAD) {
     PR_fprintf(PR_STDERR, "Error: argument --greomni requires a path argument\n");
     return NS_ERROR_FAILURE;
