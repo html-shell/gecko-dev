@@ -4612,6 +4612,7 @@ XRE_InitCommandLine(int aArgc, char* aArgv[])
     SaveFileToEnv("XRE_APPCODE_PATH", appCodePath);
   }
 
+  path = nullptr;
   ar = CheckArg("greomni", false, &path);
   if (ar == ARG_BAD) {
     PR_fprintf(PR_STDERR, "Error: argument --greomni requires a path argument\n");
