@@ -40,6 +40,17 @@ interface nsIComponentManager : nsISupports
                                     in nsIIDRef aIID,
                                     [iid_is(aIID),retval] out nsQIResult result);
 
+    /**
+     * getPointerForInterface
+     *
+     * Returns string representation of the pointer for a instance of the interface
+     *
+     * @param aInstance - The instance of the interface
+     * @param aIID - IID of interface requested
+     * @return ACString in hex format with "0x" prepended, or empty if the instance have no aIID
+     */
+    ACString getPointerForInterface(in nsISupports aInstance,
+                                    in nsIIDRef aIID);
 
    /**
      * createInstance

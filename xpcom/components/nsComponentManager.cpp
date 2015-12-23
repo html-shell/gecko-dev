@@ -21,6 +21,7 @@
 #include "nsISupports.h"
 #include "nspr.h"
 #include "nsCRT.h" // for atoll
+#include "nsPrintfCString.h"
 
 // Arena used by component manager for storing contractid string, dll
 // location strings and small objects
@@ -1866,6 +1867,19 @@ nsComponentManagerImpl::SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf)
   // - mKnownModules' keys and values?
 
   return n;
+}
+
+NS_IMETHODIMP nsComponentManagerImpl::GetPointerForInterface(nsISupports *aInstance, const nsIID & aIID, nsACString & _retval)
+{
+  nsQueryInterface queryInterface(aInstance);
+  void* result = nullptr;
+  nsresult rc = queryInterface(aIID, &result);
+  if (rc != NS_OK) {
+    _retval = "";
+    return NS_OK;
+  }
+  _retval = nsPrintfCString("0x%p", result);
+  return NS_OK;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
