@@ -348,16 +348,7 @@ function openModalWindow(domWin, uri, args) {
     // passed and that window is hidden (eg, auth prompts are supressed if the
     // passed window is the hidden window).
     // See bug 875157 comment 30 for more...
-    if (domWin) {
-        // a domWin was passed, so we can apply the check for it being hidden.
-        let winUtils = domWin.QueryInterface(Ci.nsIInterfaceRequestor)
-                             .getInterface(Ci.nsIDOMWindowUtils);
-
-        if (winUtils && !winUtils.isParentWindowMainWidgetVisible) {
-            throw Components.Exception("Cannot call openModalWindow on a hidden window",
-                                       Cr.NS_ERROR_NOT_AVAILABLE);
-        }
-    } else {
+    if (!domWin) {
         // We try and find a window to use as the parent, but don't consider
         // if that is visible before showing the prompt.
         domWin = Services.ww.activeWindow;
